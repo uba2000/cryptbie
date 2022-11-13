@@ -63,8 +63,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: theme.fontSize.body,
-    fontWeight: "500",
-    fontFamily: "archivo-regular",
+    fontFamily: "archivo-regular500",
     textAlign: "center",
   },
   pressed: {

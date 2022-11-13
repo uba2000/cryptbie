@@ -7,6 +7,7 @@ import { theme } from "../constants";
 import SignupScreen from "../screens/SignupScreen";
 import LoginScreen from "../screens/LoginScreen";
 import DashboardLandingScreen from "../screens/DashboardLandingScreen";
+import CustomNavigationBar from "../shared/components/CustomNavigationBar";
 
 const Stack = createNativeStackNavigator();
 
@@ -36,17 +37,37 @@ const StackNavigator = () => {
   return (
     <Stack.Navigator
       initialRouteName="GetStarted"
+      id="rootStack"
       screenOptions={{
-        headerShown: false,
         contentStyle: { backgroundColor: theme.color.secondary },
       }}
     >
-      <Stack.Screen name="GetStarted" component={GetStartedScreen} />
-      <Stack.Screen name="Signup" component={SignupScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen
+        name="GetStarted"
+        component={GetStartedScreen}
+        options={{ headerBackVisible: false, headerShown: false }}
+      />
+      <Stack.Screen
+        name="Signup"
+        component={SignupScreen}
+        options={{ headerBackVisible: false, headerShown: false }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ headerBackVisible: false, headerShown: false }}
+      />
       <Stack.Screen
         name="DashboardLanding"
         component={DashboardLandingScreen}
+        options={{
+          header: (props) => <CustomNavigationBar {...props} />,
+          headerShown: true,
+          headerBackVisible: false,
+          headerStyle: {
+            backgroundColor: theme.color.secondary,
+          },
+        }}
       />
     </Stack.Navigator>
   );

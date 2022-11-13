@@ -1,4 +1,5 @@
 import { SafeAreaView, StatusBar, View } from "react-native";
+import { Text } from "react-native-paper";
 import styled from "styled-components";
 
 export const SafeArea = styled(SafeAreaView)`
@@ -20,4 +21,8 @@ export const Row = styled(View)`
 
 export const Column = styled(View)`
   flex-direction: column;
+`;
+
+export const CommonText = styled(Text)`
+  font-family: "archivo-regular";
 `;

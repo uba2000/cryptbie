@@ -59,10 +59,9 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   title: {
-    fontFamily: "archivo-regular",
+    fontFamily: "archivo-regular600",
     fontSize: 24,
-    fontWeight: "700",
-    alignSelf: "center",
+    alignSelf: "flex-start",
     marginBottom: theme.spacing.xxlarge,
     lineHeight: 28,
   },

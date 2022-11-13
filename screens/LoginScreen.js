@@ -78,8 +78,7 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSize.subTitle,
     color: theme.color.neutral700,
     marginBottom: theme.spacing.large,
-    fontWeight: "700",
-    fontFamily: "archivo-regular",
+    fontFamily: "archivo-regular700",
     alignSelf: "center",
   },
   label: {
