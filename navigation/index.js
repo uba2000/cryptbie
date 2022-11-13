@@ -6,6 +6,7 @@ import GetStartedScreen from "../screens/GetStartedScreen";
 import { theme } from "../constants";
 import SignupScreen from "../screens/SignupScreen";
 import LoginScreen from "../screens/LoginScreen";
+import DashboardLandingScreen from "../screens/DashboardLandingScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +44,10 @@ const StackNavigator = () => {
       <Stack.Screen name="GetStarted" component={GetStartedScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen
+        name="DashboardLanding"
+        component={DashboardLandingScreen}
+      />
     </Stack.Navigator>
   );
 };

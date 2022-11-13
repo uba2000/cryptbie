@@ -1,12 +1,14 @@
 import { View, Text, Image, StyleSheet, TextInput } from "react-native";
 import React from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useNavigation } from "@react-navigation/native";
 
 import { Container, Row, SafeArea } from "../utilities/components/common";
 import { theme } from "../constants";
 import { PrimaryButton } from "../shared/components/Button";
 
 const LoginScreen = () => {
+  const navigation = useNavigation();
   return (
     <SafeArea>
       <KeyboardAwareScrollView
@@ -57,7 +59,11 @@ const LoginScreen = () => {
           </Row>
 
           <Row>
-            <PrimaryButton>Login</PrimaryButton>
+            <PrimaryButton
+              onPress={() => navigation.navigate("DashboardLanding")}
+            >
+              Login
+            </PrimaryButton>
           </Row>
         </Container>
       </KeyboardAwareScrollView>

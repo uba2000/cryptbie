@@ -1,17 +1,14 @@
 import { View, Text, Image, StyleSheet, TextInput } from "react-native";
 import React from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useNavigation } from "@react-navigation/native";
 
-import {
-  Column,
-  Container,
-  Row,
-  SafeArea,
-} from "../utilities/components/common";
+import { Container, Row, SafeArea } from "../utilities/components/common";
 import { theme } from "../constants";
 import { PrimaryButton } from "../shared/components/Button";
 
 const SignupScreen = () => {
+  const navigation = useNavigation();
   return (
     <SafeArea>
       <KeyboardAwareScrollView
@@ -104,7 +101,11 @@ const SignupScreen = () => {
           </Row>
 
           <Row>
-            <PrimaryButton>Sign Up</PrimaryButton>
+            <PrimaryButton
+              onPress={() => navigation.navigate("DashboardLanding")}
+            >
+              Sign Up
+            </PrimaryButton>
           </Row>
         </Container>
       </KeyboardAwareScrollView>
