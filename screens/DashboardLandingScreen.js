@@ -2,16 +2,20 @@ import React, { useLayoutEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { View, StyleSheet } from "react-native";
-import { BottomNavigation } from "react-native-paper";
+import { BottomNavigation, Text } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import HomeScene from "../scenes/HomeScene";
 import { theme } from "../constants";
+import { CommonText } from "../utilities/components/common";
+import ProfileScene from "../scenes/ProfileScene";
 
 const renderScene = ({ route, jumpTo }) => {
   switch (route.key) {
     case "home":
       return <HomeScene jumpTo={jumpTo} />;
+    case "profile":
+      return <ProfileScene jumpTo={jumpTo} />;
   }
 };
 
@@ -22,9 +26,30 @@ const DashboardLandingScreen = () => {
   const navigation = useNavigation();
 
   const [routes] = React.useState([
-    { key: "home", title: "Home", headerTitle: "Home", icon: "home" },
-    { key: "payment", title: "Payments", headerTitle: "Pay", icon: "wallet" },
-    { key: "wallet", title: "Wallet", headerTitle: "Wallet", icon: "wallet" },
+    {
+      key: "home",
+      title: <CommonText style={styles.bottomNavText}>Home</CommonText>,
+      headerTitle: "Home",
+      icon: "home",
+    },
+    // {
+    //   key: "payment",
+    //   title: <CommonText style={styles.bottomNavText}>Payments</CommonText>,
+    //   headerTitle: "Pay",
+    //   icon: "wallet",
+    // },
+    // {
+    //   key: "wallet",
+    //   title: <CommonText style={styles.bottomNavText}>Wallet</CommonText>,
+    //   headerTitle: "Wallet",
+    //   icon: "wallet",
+    // },
+    {
+      key: "profile",
+      title: <CommonText style={styles.bottomNavText}>Profile</CommonText>,
+      headerTitle: "Profile",
+      icon: "wallet",
+    },
   ]);
 
   useLayoutEffect(() => {
@@ -45,7 +70,11 @@ const DashboardLandingScreen = () => {
           renderScene={renderScene}
           activeColor={theme.color.primary400}
           inactiveColor={theme.color.neutral500}
-          barStyle={{ backgroundColor: "white" }}
+          barStyle={{
+            backgroundColor: "white",
+            borderTopColor: theme.color.neutral100,
+            borderTopWidth: 1,
+          }}
         />
       </View>
     );
@@ -63,4 +92,5 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.color.secondary,
   },
+  bottomNavText: { textAlign: "center" },
 });

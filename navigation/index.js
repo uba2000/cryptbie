@@ -8,6 +8,7 @@ import SignupScreen from "../screens/SignupScreen";
 import LoginScreen from "../screens/LoginScreen";
 import DashboardLandingScreen from "../screens/DashboardLandingScreen";
 import CustomNavigationBar from "../shared/components/CustomNavigationBar";
+import PayDuesScreen from "../screens/PayDuesScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -40,6 +41,9 @@ const StackNavigator = () => {
       id="rootStack"
       screenOptions={{
         contentStyle: { backgroundColor: theme.color.secondary },
+        headerStyle: {
+          backgroundColor: theme.color.secondary,
+        },
       }}
     >
       <Stack.Screen
@@ -69,6 +73,7 @@ const StackNavigator = () => {
           },
         }}
       />
+      <Stack.Screen name="PayDue" component={PayDuesScreen} />
     </Stack.Navigator>
   );
 };

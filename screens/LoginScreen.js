@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { Container, Row, SafeArea } from "../utilities/components/common";
 import { theme } from "../constants";
-import { PrimaryButton } from "../shared/components/Button";
+import { OutlineButton, PrimaryButton } from "../shared/components/Button";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -64,6 +64,14 @@ const LoginScreen = () => {
             >
               Login
             </PrimaryButton>
+          </Row>
+
+          <Row style={{ marginTop: 30 }}>
+            <OutlineButton
+              onPress={() => navigation.navigate("DashboardLanding")}
+            >
+              Login as Lecturer
+            </OutlineButton>
           </Row>
         </Container>
       </KeyboardAwareScrollView>

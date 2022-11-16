@@ -25,8 +25,8 @@ const CustomNavigationBar = (props) => {
           >
             <View style={{ flex: 1 }}>
               <Image
-                style={{ width: 40, height: 40 }}
-                source={require("../../assets/images/user-1.png")}
+                style={{ width: 40, height: 40, borderRadius: 20 }}
+                source={require("../../assets/images/user-1.jpg")}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -49,7 +49,11 @@ const CustomNavigationBar = (props) => {
   }
 
   return (
-    <Appbar.Header style={{ backgroundColor: theme.color.secondary }}>
+    <Appbar.Header
+      style={{
+        backgroundColor: theme.color.secondary,
+      }}
+    >
       <Appbar.Content
         title={title}
         titleStyle={{ fontSize: 24, fontFamily: "archivo-regular600" }}
@@ -64,3 +68,11 @@ const CustomNavigationBar = (props) => {
 };
 
 export default CustomNavigationBar;
+
+const styles = StyleSheet.create({
+  boldText: {
+    fontWeight: "500",
+    fontSize: 20,
+    lineHeight: 30,
+  },
+});
