@@ -12,10 +12,21 @@ import * as SplashScreen from "expo-splash-screen";
 import { Provider as PaperProvider } from "react-native-paper";
 import { Provider as StoreProvider, useSelector } from "react-redux";
 import { useEffect } from "react";
+import _ from "lodash";
 
 import { store } from "./slices/store";
 import StackNavigator from "./navigation";
 import FullLoading from "./shared/components/FullLoading";
+import { register } from "./services/ServiceFactory";
+
+const registerServices = _.once(register);
+registerServices();
+
+if (__DEV__) {
+  import("./ReactotronConfig").then((info) => {
+    console.log("Reactotron Configured");
+  });
+}
 
 export default function App() {
   const [fontsLoaded] = useFonts({
