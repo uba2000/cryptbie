@@ -5,6 +5,7 @@ export const color = {
   green300: "#3DCC00",
   red500: "#A8201A",
   white: "#ffffff",
+  formFill: "#D9EBF2",
   neutral100: "#C0CACE",
   neutral500: "#5F737C",
   neutral700: "#21252A",

@@ -7,6 +7,7 @@ const initialState = {
   password: "",
   loginDate: "",
   locations: [],
+  fullIsLoading: false,
 };
 
 export const logoutAction = createAction("global/logout");
@@ -46,6 +47,9 @@ export const globalSlice = createSlice({
     pushLocation: (state, action) => {
       state.locations.push(action.payload);
     },
+    toggleFullIsLoading: (state) => {
+      state.fullIsLoading = !state.fullIsLoading;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(logoutAction, (state, action) => {
@@ -59,6 +63,7 @@ export const {
   setLoginError,
   setBootstrapDataLoaded,
   pushLocation,
+  toggleFullIsLoading,
 } = globalSlice.actions;
 
 export default globalSlice.reducer;

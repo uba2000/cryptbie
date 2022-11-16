@@ -10,11 +10,12 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 import { Provider as PaperProvider } from "react-native-paper";
-import { Provider as StoreProvider } from "react-redux";
+import { Provider as StoreProvider, useSelector } from "react-redux";
 import { useEffect } from "react";
 
 import { store } from "./slices/store";
 import StackNavigator from "./navigation";
+import FullLoading from "./shared/components/FullLoading";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -53,6 +54,7 @@ export default function App() {
         <PaperProvider>
           <NavigationContainer>
             <StackNavigator />
+            <FullLoading />
           </NavigationContainer>
         </PaperProvider>
       </StoreProvider>
