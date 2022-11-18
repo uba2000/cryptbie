@@ -6,13 +6,14 @@ import { PAYMENTTYPES } from "../data/dummy-data";
 import { theme } from "../constants";
 import { Column, CommonText, Row } from "../utilities/components/common";
 import { useNavigation } from "@react-navigation/native";
+import { formatNumber } from "../utilities/formatNumber";
 
 const GlanceRight = (props) => {
   return (
     <View style={styles.glanceRight}>
       <Column style={{ alignItems: "center" }}>
         <Text style={{ fontFamily: "archivo-regular600", fontSize: 18 }}>
-          ₦{props.price ? props.price : 0}
+          ₦{props.price ? formatNumber(props.price) : 0}
         </Text>
         <Text
           style={{
@@ -78,7 +79,7 @@ const HomeScene = ({ jumpTo }) => {
             <CommonText
               style={{ fontFamily: "raleway-regular700", fontSize: 28 }}
             >
-              ₦7,800
+              ₦{formatNumber(7800)}
             </CommonText>
           </View>
         </Row>

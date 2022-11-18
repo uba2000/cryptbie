@@ -5,6 +5,7 @@ import { PAYMENTTYPES } from "../data/dummy-data";
 import { TextInput } from "react-native-paper";
 import { Row } from "../utilities/components/common";
 import { PrimaryButton } from "../shared/components/Button";
+import { formatNumber } from "../utilities/formatNumber";
 
 const PayDuesScreen = ({ route, navigation }) => {
   const payId = route.params.paymentId;
@@ -25,7 +26,9 @@ const PayDuesScreen = ({ route, navigation }) => {
       <View style={{ marginTop: 20, marginBottom: 36 }}>
         <Text style={styles.sectionTitle}>Amount</Text>
         <View style={styles.priceContainer}>
-          <Text style={styles.paymentPrice}>₦{paymentDetails.price}</Text>
+          <Text style={styles.paymentPrice}>
+            ₦{formatNumber(paymentDetails.price)}
+          </Text>
         </View>
       </View>
 
@@ -38,6 +41,7 @@ const PayDuesScreen = ({ route, navigation }) => {
             autoCapitalize="none"
             autoCorrect={false}
             placeholder="Name on Card"
+            underlineColor="transparent"
             // onChangeText={numberInputHandler}
             // value={enteredNumber}
           />
@@ -49,6 +53,7 @@ const PayDuesScreen = ({ route, navigation }) => {
             autoCapitalize="none"
             autoCorrect={false}
             placeholder="Card Number"
+            underlineColor="transparent"
             // onChangeText={numberInputHandler}
             // value={enteredNumber}
           />
@@ -60,6 +65,7 @@ const PayDuesScreen = ({ route, navigation }) => {
             autoCapitalize="none"
             autoCorrect={false}
             placeholder="Expiry Date"
+            underlineColor="transparent"
             // onChangeText={numberInputHandler}
             // value={enteredNumber}
           />
@@ -69,6 +75,7 @@ const PayDuesScreen = ({ route, navigation }) => {
             autoCapitalize="none"
             autoCorrect={false}
             placeholder="CVV"
+            underlineColor="transparent"
             // onChangeText={numberInputHandler}
             // value={enteredNumber}
           />

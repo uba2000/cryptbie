@@ -9,6 +9,7 @@ import HomeScene from "../scenes/HomeScene";
 import { theme } from "../constants";
 import { CommonText } from "../utilities/components/common";
 import ProfileScene from "../scenes/ProfileScene";
+import PaymentLogsScene from "../scenes/PaymentLogsScene";
 
 const renderScene = ({ route, jumpTo }) => {
   switch (route.key) {
@@ -16,41 +17,59 @@ const renderScene = ({ route, jumpTo }) => {
       return <HomeScene jumpTo={jumpTo} />;
     case "profile":
       return <ProfileScene jumpTo={jumpTo} />;
+    case "logs":
+      return <PaymentLogsScene jumpTo={jumpTo} />;
   }
 };
 
 const DashboardLandingScreen = () => {
   const { showTabs } = useSelector((state) => state.navigation);
+  const { loggedInUser } = useSelector((state) => state.global);
   const insets = useSafeAreaInsets();
   const [index, setIndex] = React.useState(0);
   const navigation = useNavigation();
 
-  const [routes] = React.useState([
-    {
-      key: "home",
-      title: <CommonText style={styles.bottomNavText}>Home</CommonText>,
-      headerTitle: "Home",
-      icon: "home",
-    },
-    // {
-    //   key: "payment",
-    //   title: <CommonText style={styles.bottomNavText}>Payments</CommonText>,
-    //   headerTitle: "Pay",
-    //   icon: "wallet",
-    // },
-    // {
-    //   key: "wallet",
-    //   title: <CommonText style={styles.bottomNavText}>Wallet</CommonText>,
-    //   headerTitle: "Wallet",
-    //   icon: "wallet",
-    // },
-    {
-      key: "profile",
-      title: <CommonText style={styles.bottomNavText}>Profile</CommonText>,
-      headerTitle: "Profile",
-      icon: "wallet",
-    },
-  ]);
+  const [routes] = React.useState(
+    loggedInUser.role !== "L"
+      ? [
+          {
+            key: "home",
+            title: <CommonText style={styles.bottomNavText}>Home</CommonText>,
+            headerTitle: "Home",
+            icon: "home",
+          },
+          {
+            key: "profile",
+            title: (
+              <CommonText style={styles.bottomNavText}>Profile</CommonText>
+            ),
+            headerTitle: "Profile",
+            icon: "wallet",
+          },
+        ]
+      : [
+          {
+            key: "home",
+            title: <CommonText style={styles.bottomNavText}>Home</CommonText>,
+            headerTitle: "Home",
+            icon: "home",
+          },
+          {
+            key: "profile",
+            title: (
+              <CommonText style={styles.bottomNavText}>Profile</CommonText>
+            ),
+            headerTitle: "Profile",
+            icon: "wallet",
+          },
+          {
+            key: "logs",
+            title: <CommonText style={styles.bottomNavText}>Logs</CommonText>,
+            headerTitle: "Logs",
+            icon: "wallet",
+          },
+        ]
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({

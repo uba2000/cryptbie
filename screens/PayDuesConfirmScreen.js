@@ -6,6 +6,7 @@ import { PrimaryButton } from "../shared/components/Button";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { toggleFullIsLoading } from "../slices/globalSlice";
+import { formatNumber } from "../utilities/formatNumber";
 
 const PayDuesConfirmScreen = ({ route }) => {
   const dispatch = useDispatch();
@@ -50,7 +51,9 @@ const PayDuesConfirmScreen = ({ route }) => {
             <View style={styles.detailBox}>
               <Text style={styles.detailTitle}>Amount</Text>
               <Row>
-                <Text style={styles.detailValue}>₦{paymentDetails.amount}</Text>
+                <Text style={styles.detailValue}>
+                  ₦{formatNumber(paymentDetails.amount)}
+                </Text>
               </Row>
             </View>
           </View>

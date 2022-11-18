@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, TextInput } from "react-native";
+import { Image, StyleSheet, TextInput } from "react-native";
 import React from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
@@ -6,9 +6,52 @@ import { useNavigation } from "@react-navigation/native";
 import { Container, Row, SafeArea } from "../utilities/components/common";
 import { theme } from "../constants";
 import { OutlineButton, PrimaryButton } from "../shared/components/Button";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleFullIsLoading } from "../slices/globalSlice";
+import { ServiceFactory } from "../services/ServiceFactory";
+import { Text } from "react-native-paper";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [isPwdShowing, setIsPwdShowing] = React.useState(false);
+  const [isUserError, setIsUserError] = React.useState(false);
+  const [isPwdError, setIsPwdError] = React.useState(false);
+
+  const canLogin = email.trim().length > 0 && password.trim().length > 0;
+
+  const { loginError } = useSelector((state) => state.global);
+  const dispatch = useDispatch();
+
+  const handleLogin = async () => {
+    await login(email, password);
+  };
+
+  const handleLecturerLogin = async () => {
+    await login("lecturer@gmail.com", "test1234");
+  };
+
+  const togglePwdIsShowing = () => setIsPwdShowing(!isPwdShowing);
+
+  const login = async (email, password) => {
+    console.log("ff");
+    dispatch(toggleFullIsLoading());
+
+    try {
+      const userService = ServiceFactory.use("user");
+      const success = await userService.login(email, password);
+
+      if (success) {
+        navigation.navigate("DashboardLanding");
+      }
+    } finally {
+      dispatch(toggleFullIsLoading());
+    }
+
+    return Promise.resolve();
+  };
   return (
     <SafeArea>
       <KeyboardAwareScrollView
@@ -45,31 +88,40 @@ const LoginScreen = () => {
           </Row>
           <Row>
             <TextInput
+              label="Password"
               style={[styles.inputs, { marginBottom: 16 }]}
               keyboardType="password"
               autoCapitalize="none"
               autoCorrect={false}
+              autoComplete="off"
               placeholder="Create password"
+              secureTextEntry={!isPwdShowing}
+              error={isPwdError}
+              onBlur={() => setIsPwdError(!password.trim())}
+              onChangeText={(text) => setPassword(text)}
               // onChangeText={numberInputHandler}
               // value={enteredNumber}
             />
           </Row>
-          <Row style={{ alignSelf: "flex-end", marginBottom: 72 }}>
+          <Row style={{ alignSelf: "flex-end", marginBottom: 66 }}>
             <Text style={styles.label}>Forgot Password?</Text>
           </Row>
 
-          <Row>
-            <PrimaryButton
-              onPress={() => navigation.navigate("DashboardLanding")}
+          {loginError?.displayMessage && (
+            <Text
+              style={{ color: "red", marginBottom: 16 }}
+              variant="titleMedium"
             >
-              Login
-            </PrimaryButton>
+              {loginError.displayMessage}
+            </Text>
+          )}
+
+          <Row>
+            <PrimaryButton onPress={() => handleLogin()}>Login</PrimaryButton>
           </Row>
 
           <Row style={{ marginTop: 30 }}>
-            <OutlineButton
-              onPress={() => navigation.navigate("DashboardLanding")}
-            >
+            <OutlineButton onPress={() => handleLecturerLogin()}>
               Login as Lecturer
             </OutlineButton>
           </Row>
