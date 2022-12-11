@@ -8,6 +8,10 @@ const initialState = {
   loginDate: "",
   locations: [],
   fullIsLoading: false,
+  shareReceipt: {
+    data: null,
+    isOpen: false,
+  }
 };
 
 export const logoutAction = createAction("global/logout");
@@ -50,6 +54,9 @@ export const globalSlice = createSlice({
     toggleFullIsLoading: (state) => {
       state.fullIsLoading = !state.fullIsLoading;
     },
+    toggleSharedReceiptDrawer: (state) => {
+      state.shareReceipt.isOpen = !state.shareReceipt.isOpen
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(logoutAction, (state, action) => {
@@ -58,12 +65,15 @@ export const globalSlice = createSlice({
   },
 });
 
+export const selectShareReceipt = (state) => state.global.shareReceipt;
+
 export const {
   setLoggedIn,
   setLoginError,
   setBootstrapDataLoaded,
   pushLocation,
   toggleFullIsLoading,
+  toggleSharedReceiptDrawer,
 } = globalSlice.actions;
 
 export default globalSlice.reducer;

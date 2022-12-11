@@ -1,33 +1,29 @@
-import { View, Text, StyleSheet, Image } from "react-native";
-import React from "react";
-import { theme } from "../constants";
-import { Column, Row } from "../utilities/components/common";
-import { PrimaryButton } from "../shared/components/Button";
-import { useNavigation } from "@react-navigation/native";
-import { formatNumber } from "../utilities/formatNumber";
-import moment from "moment";
+import { useCallback, useRef } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { theme } from '../constants';
+import BottomDrawer from '../shared/components/ShareDrawer';
+import { PrimaryButton } from '../shared/components/Button';
+import { Row } from '../utilities/components/common';
+import ShareDrawer from '../shared/components/ShareDrawer';
+import { List } from "react-native-paper";
+import { useDispatch } from 'react-redux';
+import { toggleSharedReceiptDrawer } from '../slices/globalSlice';
 
-const PaySuccessScreen = ({ route }) => {
-  const paymentDetails = route.params;
-  const navigation = useNavigation();
+function PaymentReceiptScreen() {
   return (
-    <View style={styles.screen}>
-      <Column style={{ alignSelf: "center", alignItems: "center", justifyContent: 'space-between' }}>
-        <Image
-          style={{ width: 120, height: 80, marginBottom: 24 }}
-          source={require("../assets/images/success-badge.png")}
-        />
-
-        <Text style={styles.transactionText}>Transaction Succesful!</Text>
+    <>
+      <View style={styles.screen}>
+        <Text style={styles.transactionText}>Due Paid</Text>
         <Text style={styles.transactionSubText}>Below are the details of your transaction</Text>
 
-        <Row style={{ justifyContent: "space-between" }}>
-          <View style={{ marginTop: 20, marginBottom: 36, flex: 1 }}>
+        <Row style={[{ justifyContent: "space-between" }, styles.paymentBox]}>
+          <View style={{ flex: 1 }}>
             <View style={styles.detailBox}>
               <Text style={styles.detailTitle}>Payment Name:</Text>
               <Row>
                 <Text style={styles.detailValue}>
-                  {paymentDetails.paymentFor}
+                  {/* {paymentDetails.paymentFor} */}
+                  Faculty Dues
                 </Text>
               </Row>
             </View>
@@ -36,7 +32,8 @@ const PaySuccessScreen = ({ route }) => {
               <Text style={styles.detailTitle}>Payment Method:</Text>
               <Row>
                 <Text style={styles.detailValue}>
-                  {paymentDetails.paymentMethod}
+                  {/* {paymentDetails.paymentMethod} */}
+                  Card
                 </Text>
               </Row>
             </View>
@@ -45,7 +42,8 @@ const PaySuccessScreen = ({ route }) => {
               <Text style={styles.detailTitle}>Amount Paid:</Text>
               <Row>
                 <Text style={styles.detailValue}>
-                  ₦{formatNumber(paymentDetails.amount)}
+                  {/* ₦{formatNumber(paymentDetails.amount)} */}
+                  ₦1000
                 </Text>
               </Row>
             </View>
@@ -53,40 +51,39 @@ const PaySuccessScreen = ({ route }) => {
             <View style={styles.detailBox}>
               <Text style={styles.detailTitle}>Payment Date:</Text>
               <Row>
-                <Text style={styles.detailValue}>
-                  {moment(paymentDetails.date).format('MMM DD, YYYY. hh:mm A')}
+                <Text style={[styles.detailValue, styles.date]}>
+                  {/* {moment(paymentDetails.date).format('MMM DD, YYYY. hh:mm A')} */}
+                  Dec 11, 2022. 12: 15 PM
                 </Text>
               </Row>
             </View>
           </View>
         </Row>
-
         <Row>
           <PrimaryButton
-            onPress={() => navigation.navigate("DashboardLanding")}
+            onPress={() => { }}
           >
-            Back to dashboard
+            Download receipt
           </PrimaryButton>
         </Row>
-      </Column>
-    </View>
+      </View>
+      
+    </>
   );
-};
+}
 
-export default PaySuccessScreen;
+export default PaymentReceiptScreen;
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    justifyContent: "center",
     paddingTop: 32,
     paddingHorizontal: 20,
     backgroundColor: theme.color.secondary,
   },
-
   transactionText: {
-    marginBottom: 8,
-    fontSize: 18,
+    marginBottom: 4,
+    fontSize: 24,
     color: theme.color.neutral700,
     fontFamily: "archivo-regular600",
   },
@@ -100,10 +97,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     padding: 0,
     paddingBottom: 23,
+    paddingHorizontal: 16,
     paddingTop: 18,
     flexDirection: "row",
     justifyContent: "space-between",
-  },
+  },  
   detailTitle: {
     fontFamily: "archivo-regular",
     fontSize: 16,
@@ -120,4 +118,18 @@ const styles = StyleSheet.create({
     color: theme.color.neutral500,
     marginLeft: 4,
   },
-});
+  paymentBox: {
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    shadowColor: "#171717",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    // paddingVertical: 8,
+    elevation: 2,
+    backgroundColor: "white",
+    marginBottom: 36
+  },
+})

@@ -33,13 +33,15 @@ const HomeScene = ({ jumpTo }) => {
   const navigation = useNavigation();
   const renderPaymentItem = ({ item }) => {
     function handlePress() {
+      const data = { paymentId: item.id };
       if (item.paid) {
         // go to view payment status...
+        navigation.navigate("PaymentReceipt", data);
         return;
       }
 
       // go to payment...
-      navigation.navigate("PayDue", { paymentId: item.id });
+      navigation.navigate("PayDue", data);
     }
 
     return (

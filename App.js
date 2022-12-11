@@ -18,6 +18,8 @@ import { store } from "./slices/store";
 import StackNavigator from "./navigation";
 import FullLoading from "./shared/components/FullLoading";
 import { register } from "./services/ServiceFactory";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+// import ShareReceiptAs from "./shared/components/ShareReceiptAs";
 
 const registerServices = _.once(register);
 registerServices();
@@ -61,14 +63,17 @@ export default function App() {
   return (
     <>
       <StatusBar style="auto" />
-      <StoreProvider store={store}>
-        <PaperProvider>
-          <NavigationContainer>
-            <StackNavigator />
-            <FullLoading />
-          </NavigationContainer>
-        </PaperProvider>
-      </StoreProvider>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <StoreProvider store={store}>
+          <PaperProvider>
+            <NavigationContainer>
+              <StackNavigator />
+              <FullLoading />
+              {/* <ShareReceiptAs /> */}
+            </NavigationContainer>
+          </PaperProvider>
+        </StoreProvider>
+      </GestureHandlerRootView>
     </>
   );
 }

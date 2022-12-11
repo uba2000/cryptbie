@@ -11,6 +11,7 @@ import CustomNavigationBar from "../shared/components/CustomNavigationBar";
 import PayDuesScreen from "../screens/PayDuesScreen";
 import PayDuesConfirmScreen from "../screens/PayDuesConfirmScreen";
 import PaySuccessScreen from "../screens/PaySuccessScreen";
+import PaymentReceiptScreen from "../screens/PaymentReceiptScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -86,6 +87,7 @@ const StackNavigator = () => {
         component={PaySuccessScreen}
         options={{ title: " ", headerBackVisible: false, headerShown: false }}
       />
+      <Stack.Screen name="PaymentReceipt" component={PaymentReceiptScreen} />
     </Stack.Navigator>
   );
 };

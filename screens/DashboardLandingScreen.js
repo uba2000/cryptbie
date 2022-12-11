@@ -37,6 +37,14 @@ const DashboardLandingScreen = () => {
             title: <CommonText style={styles.bottomNavText}>Home</CommonText>,
             headerTitle: "Home",
             icon: "home",
+        },
+          {
+            key: "courses",
+            title: (
+              <CommonText style={styles.bottomNavText}>Courses</CommonText>
+            ),
+            headerTitle: "Courses",
+            icon: "book",
           },
           {
             key: "profile",
