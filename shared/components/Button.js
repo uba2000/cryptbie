@@ -49,7 +49,8 @@ export function OutlineButton({ children, onPress }) {
 const styles = StyleSheet.create({
   buttonOuterContainer: {
     borderRadius: 8,
-    margin: 4,
+    margin: 0,
+    marginVertical: 4,
     flex: 1,
     overflow: "hidden",
     borderColor: theme.color.primary400,

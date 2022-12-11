@@ -30,7 +30,13 @@ const PayDuesScreen = ({ route, navigation }) => {
     console.log(data);
     if (data.status === "successful") {
       // register payment in backend
-      navigation.navigate("PaySuccess");
+      navigation.navigate("PaySuccess", {
+        cardName: "Charis Bank",
+        paymentFor: paymentDetails.title,
+        paymentMethod: 'card',
+        amount: paymentDetails.price,
+        date: new Date()
+      });
     }
   };
   
@@ -65,55 +71,6 @@ const PayDuesScreen = ({ route, navigation }) => {
         </View>
       </View>
 
-      {/* <View style={{ marginBottom: 36 }}>
-        <Text style={styles.sectionTitle}>Payment Method</Text>
-        <Row>
-          <TextInput
-            style={[styles.inputs]}
-            keyboardType="default"
-            autoCapitalize="none"
-            autoCorrect={false}
-            placeholder="Name on Card"
-            underlineColor="transparent"
-            // onChangeText={numberInputHandler}
-            // value={enteredNumber}
-          />
-        </Row>
-        <Row>
-          <TextInput
-            style={[styles.inputs]}
-            keyboardType="number-pad"
-            autoCapitalize="none"
-            autoCorrect={false}
-            placeholder="Card Number"
-            underlineColor="transparent"
-            // onChangeText={numberInputHandler}
-            // value={enteredNumber}
-          />
-        </Row>
-        <Row>
-          <TextInput
-            style={[styles.inputs, { marginRight: 16 }]}
-            keyboardType="number-pad"
-            autoCapitalize="none"
-            autoCorrect={false}
-            placeholder="Expiry Date"
-            underlineColor="transparent"
-            // onChangeText={numberInputHandler}
-            // value={enteredNumber}
-          />
-          <TextInput
-            style={[styles.inputs, {}]}
-            keyboardType="number-pad"
-            autoCapitalize="none"
-            autoCorrect={false}
-            placeholder="CVV"
-            underlineColor="transparent"
-            // onChangeText={numberInputHandler}
-            // value={enteredNumber}
-          />
-        </Row>
-      </View> */}
       <PayWithFlutterwave
         onRedirect={handleOnRedirect}
         options={{
