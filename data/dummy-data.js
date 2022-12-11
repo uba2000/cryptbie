@@ -3,7 +3,10 @@ import Log from "../models/log";
 
 export const PAYMENTTYPES = [
   new Payment("1", "Faculty Dues", true, 1000),
-  new Payment("2", "Department Dues", false, 7000),
+  new Payment("4", "Faculty Dues (Maintenance Fees)", false, 1000),
+  // this dues depends on the level...
+  new Payment("2", "Department Dues", false, 1000),
+  new Payment("5", "Exam Pass Fees", false, 500),
   new Payment("3", "Class Dues", false, 5000),
 ];
 

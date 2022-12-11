@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import React, { Fragment } from "react";
+import {PayWithFlutterwave} from 'flutterwave-react-native';
 import { theme } from "../constants";
 import { Column, Row } from "../utilities/components/common";
 import { PrimaryButton } from "../shared/components/Button";
@@ -57,9 +58,39 @@ const PayDuesConfirmScreen = ({ route }) => {
               </Row>
             </View>
           </View>
+          <PayWithFlutterwave
+            onRedirect={handleOnRedirect}
+            options={{
+              tx_ref: generateTransactionRef(10),
+              authorization: 'FLWPUBK_TEST-ec94e2d5babcb235f2b1bf4ee68a8c00-X',
+              customer: {
+                email: 'customer-email@example.com'
+              },
+              amount: paymentDetails.amount,
+              currency: 'NGN',
+              payment_options: 'card'
+            }}
+            onDidInitialize={() => {
+              console.log('did init');
+              dispatch(toggleFullIsLoading());
+            }}
+            onWillInitialize={() => {
+              console.log('will init');
+              dispatch(toggleFullIsLoading());
+            }}
+            customButton={(props) => (
           <Row>
-            <PrimaryButton onPress={proceedPay}>Proceed to Pay</PrimaryButton>
+            <PrimaryButton onPress={props.onPress}>Proceed to Pay</PrimaryButton>
           </Row>
+            )}
+          />
+              {/* <TouchableOpacity
+                style={styles.paymentButton}
+                onPress={props.onPress}
+                isBusy={props.isInitializing}
+                disabled={props.disabled}>
+                  <Text style={styles.paymentButtonText}>Pay $500</Text>
+              </TouchableOpacity> */}
         </Column>
       </View>
     </Fragment>

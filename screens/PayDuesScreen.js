@@ -1,13 +1,17 @@
 import { View, Text, StyleSheet } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
+import {PayWithFlutterwave} from 'flutterwave-react-native';
 import { theme } from "../constants";
 import { PAYMENTTYPES } from "../data/dummy-data";
 import { TextInput } from "react-native-paper";
 import { Row } from "../utilities/components/common";
 import { PrimaryButton } from "../shared/components/Button";
 import { formatNumber } from "../utilities/formatNumber";
+import { useDispatch } from "react-redux";
+import { toggleFullIsLoading } from "../slices/globalSlice";
 
 const PayDuesScreen = ({ route, navigation }) => {
+  const dispatch = useDispatch();
   const payId = route.params.paymentId;
   const [paymentDetails, setPaymentDetails] = useState(
     PAYMENTTYPES.find((d) => d.id == payId)
@@ -21,8 +25,37 @@ const PayDuesScreen = ({ route, navigation }) => {
     });
   }, [payId, navigation]);
 
+  const handleOnRedirect = (data) => {
+    // {"status": "successful", "transaction_id": "4014843", "tx_ref": "flw_tx_ref_uRh1wIsnpt"}
+    console.log(data);
+    if (data.status === "successful") {
+      // register payment in backend
+      navigation.navigate("PaySuccess");
+    }
+  };
+  
+  const generateTransactionRef = (length) => {
+    var result = '';
+    var characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return `flw_tx_ref_${result}`;
+  };
+
   return (
     <View style={styles.screen}>
+      <View style={{ marginTop: 20 }}>
+        <Text style={styles.sectionTitle}>Title</Text>
+        <View style={styles.priceContainer}>
+          <Text style={styles.paymentPrice}>
+            {paymentDetails.title}
+          </Text>
+        </View>
+      </View>
+
       <View style={{ marginTop: 20, marginBottom: 36 }}>
         <Text style={styles.sectionTitle}>Amount</Text>
         <View style={styles.priceContainer}>
@@ -32,12 +65,12 @@ const PayDuesScreen = ({ route, navigation }) => {
         </View>
       </View>
 
-      <View style={{ marginBottom: 36 }}>
+      {/* <View style={{ marginBottom: 36 }}>
         <Text style={styles.sectionTitle}>Payment Method</Text>
         <Row>
           <TextInput
             style={[styles.inputs]}
-            keyboardType="number-pad"
+            keyboardType="default"
             autoCapitalize="none"
             autoCorrect={false}
             placeholder="Name on Card"
@@ -80,21 +113,33 @@ const PayDuesScreen = ({ route, navigation }) => {
             // value={enteredNumber}
           />
         </Row>
-      </View>
+      </View> */}
+      <PayWithFlutterwave
+        onRedirect={handleOnRedirect}
+        options={{
+          tx_ref: generateTransactionRef(10),
+          authorization: 'FLWPUBK_TEST-ec94e2d5babcb235f2b1bf4ee68a8c00-X',
+          customer: {
+            email: 'customer-email@example.com'
+          },
+          amount: paymentDetails.price,
+          currency: 'NGN',
+          payment_options: 'card'
+        }}
+        onDidInitialize={() => {
+          console.log('did init');
+          dispatch(toggleFullIsLoading());
+        }}
+        onWillInitialize={() => {
+          console.log('will init');
+          dispatch(toggleFullIsLoading());
+        }}
+        customButton={(props) => (
       <Row>
-        <PrimaryButton
-          onPress={() =>
-            navigation.navigate("PayDueConfirm", {
-              cardName: "Charis Bank",
-              paymentFor: paymentDetails.title,
-              cardNumber: "XXXXXX3097",
-              amount: paymentDetails.price,
-            })
-          }
-        >
-          Continue
-        </PrimaryButton>
+        <PrimaryButton onPress={props.onPress}>Proceed to Pay</PrimaryButton>
       </Row>
+        )}
+      />
     </View>
   );
 };
