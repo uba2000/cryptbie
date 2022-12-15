@@ -1,25 +1,25 @@
-import axios from "axios";
+import axios from 'axios';
 
-const BASE_URL = "";
+const BASE_URL = 'http://localhost:3300';
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  headers: { "Content-Type": "application/json" },
+  headers: { 'Content-Type': 'application/json' },
 });
 
 // Send GET Requests
 export const get = async (payload) => {
-  return await ajax({ ...payload, method: "GET" });
+  return await ajax({ ...payload, method: 'GET' });
 };
 
 // Send POST Requests
 export const post = async (payload) => {
-  return await ajax({ ...payload, method: "POST" });
+  return await ajax({ ...payload, method: 'POST' });
 };
 
 // Send HTTP Request
 async function ajax({
-  method = "GET",
+  method = 'GET',
   url,
   data,
   // headers = [],
@@ -79,7 +79,7 @@ async function ajax({
 function handleHttpResponse({ response, success }) {
   // No Data Was Returned
   if (!response.data) {
-    console.log("No Data Was Returned");
+    console.log('No Data Was Returned');
     return;
   }
 
@@ -89,10 +89,15 @@ function handleHttpResponse({ response, success }) {
 }
 
 // Handle Response Errors
-function handleHttpError({ response, error, serverError, formErrors }) {
+function handleHttpError({
+  response,
+  error,
+  serverError,
+  formErrors,
+}) {
   // No Response Was Returned
   if (!response) {
-    console.log("No Response Was Returned");
+    console.log('No Response Was Returned');
     error({ status: 449 });
     return;
   }
@@ -103,29 +108,29 @@ function handleHttpError({ response, error, serverError, formErrors }) {
   switch (response.status) {
     case 400:
       // Bad Request
-      console.log("Bad Request");
+      console.log('Bad Request');
       break;
     case 404:
       // Not Found
-      console.log("Not Found");
+      console.log('Not Found');
       break;
     case 419:
       // X-CSRF-TOKEN Error
-      console.log("X-CSRF-TOKEN Error");
+      console.log('X-CSRF-TOKEN Error');
       break;
     case 422:
       if (formErrors) {
         // Input Data Error
-        console.log("Input Data Error");
+        console.log('Input Data Error');
       }
       break;
     case 500:
       // Server Error
-      console.log("Server Error");
+      console.log('Server Error');
       break;
     case 504:
       // Gateway Timeout
-      console.log("Gateway Timeout");
+      console.log('Gateway Timeout');
       break;
 
     // ================================================================================
@@ -135,11 +140,11 @@ function handleHttpError({ response, error, serverError, formErrors }) {
     // ================================================================================
     case 449:
       // Just Try Again
-      console.log("Just Try Again");
+      console.log('Just Try Again');
       break;
     default:
       // Unknown Error
-      console.log("Unknown Error");
+      console.log('Unknown Error');
       break;
   }
 }

@@ -32,11 +32,18 @@ const GlanceRight = (props) => {
 const HomeScene = ({ jumpTo }) => {
   const navigation = useNavigation();
   const renderPaymentItem = ({ item }) => {
+    const paymentType = PAYMENTTYPES.find(d => d.id === item.id);
+    
     function handlePress() {
       const data = { paymentId: item.id };
       if (item.paid) {
         // go to view payment status...
-        navigation.navigate("PaymentReceipt", data);
+        navigation.navigate("PaymentReceipt", {
+          name: item.name, // pass in user name after login...
+          paymentType,
+          date: item.date,
+          paidWith: item.paidWith,
+        });
         return;
       }
 
@@ -72,21 +79,23 @@ const HomeScene = ({ jumpTo }) => {
           <View style={styles.balanceCircle}>
             <CommonText
               style={{
-                fontSize: 16,
+                fontSize: 20,
                 fontFamily: "archivo-regular600",
               }}
             >
-              Wallet Balance
+              2018 / 2019
             </CommonText>
             <CommonText
               style={{ fontFamily: "raleway-regular700", fontSize: 28 }}
             >
-              ₦{formatNumber(7800)}
+              400 Level
             </CommonText>
           </View>
         </Row>
 
         <View style={{ marginTop: 20 }}>
+          {/* TODO: if lecturer, list payments lecturer can see */}
+          {/* TODO: else list all fees for current student... */}
           <Text style={styles.sectionTitle}>Available Payments</Text>
           <FlatList
             data={PAYMENTTYPES}
@@ -103,9 +112,9 @@ export default HomeScene;
 
 const styles = StyleSheet.create({
   balanceCircle: {
-    width: 158,
-    height: 158,
-    borderRadius: 79,
+    width: 168,
+    height: 168,
+    borderRadius: 84,
     borderWidth: 8,
     borderColor: theme.color.primary400,
     justifyContent: "flex-start",

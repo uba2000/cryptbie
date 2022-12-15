@@ -1,10 +1,11 @@
 class Log {
-  constructor(id, name, date, price, paymentType) {
+  constructor(id, name, date, paymentType, paidWith) {
     this.id = id;
     this.name = name;
     this.paymentType = paymentType;
     this.date = date;
-    this.price = price;
+    this.paidWith = paidWith;
+    // this.price = price;
   }
 }
 

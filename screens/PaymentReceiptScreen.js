@@ -8,8 +8,17 @@ import ShareDrawer from '../shared/components/ShareDrawer';
 import { List } from "react-native-paper";
 import { useDispatch } from 'react-redux';
 import { toggleSharedReceiptDrawer } from '../slices/globalSlice';
+import { formatNumber } from '../utilities/formatNumber';
+import moment from 'moment';
 
-function PaymentReceiptScreen() {
+function PaymentReceiptScreen({ route }) {
+  console.log(route.params);
+  const {
+    name,
+    paymentType,
+    paidWith,
+    date,
+  } = route.params;
   return (
     <>
       <View style={styles.screen}>
@@ -19,31 +28,40 @@ function PaymentReceiptScreen() {
         <Row style={[{ justifyContent: "space-between" }, styles.paymentBox]}>
           <View style={{ flex: 1 }}>
             <View style={styles.detailBox}>
-              <Text style={styles.detailTitle}>Payment Name:</Text>
+              <Text style={styles.detailTitle}>Student Name:</Text>
               <Row>
                 <Text style={styles.detailValue}>
                   {/* {paymentDetails.paymentFor} */}
-                  Faculty Dues
+                  {name}
                 </Text>
               </Row>
             </View>
 
             <View style={styles.detailBox}>
-              <Text style={styles.detailTitle}>Payment Method:</Text>
+              <Text style={styles.detailTitle}>Paid For:</Text>
               <Row>
                 <Text style={styles.detailValue}>
-                  {/* {paymentDetails.paymentMethod} */}
-                  Card
+                  {/* {paymentDetails.paymentFor} */}
+                  {paymentType?.title}
                 </Text>
               </Row>
             </View>
+
+            {/* <View style={styles.detailBox}>
+              <Text style={styles.detailTitle}>Payment Method:</Text>
+              <Row>
+                <Text style={[styles.detailValue, {textTransform: 'capitalize'}]}>
+                  {paidWith}
+                </Text>
+              </Row>
+            </View> */}
 
             <View style={styles.detailBox}>
               <Text style={styles.detailTitle}>Amount Paid:</Text>
               <Row>
                 <Text style={styles.detailValue}>
-                  {/* ₦{formatNumber(paymentDetails.amount)} */}
-                  ₦1000
+                  ₦{formatNumber(paymentType?.price)}
+                  {/* ₦1000 */}
                 </Text>
               </Row>
             </View>
@@ -52,8 +70,7 @@ function PaymentReceiptScreen() {
               <Text style={styles.detailTitle}>Payment Date:</Text>
               <Row>
                 <Text style={[styles.detailValue, styles.date]}>
-                  {/* {moment(paymentDetails.date).format('MMM DD, YYYY. hh:mm A')} */}
-                  Dec 11, 2022. 12: 15 PM
+                  {moment(date).format('MMM DD, YYYY. hh:mm A')}
                 </Text>
               </Row>
             </View>
@@ -111,6 +128,8 @@ const styles = StyleSheet.create({
     fontFamily: "archivo-regular",
     fontSize: 14,
     color: theme.color.neutral700,
+    maxWidth: 200,
+    flexWrap: 'wrap',
     // textTransform: 'capitalize'
   },
   detailSubValue: {
