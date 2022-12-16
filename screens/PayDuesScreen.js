@@ -1,21 +1,37 @@
-import { View, Text, StyleSheet } from "react-native";
-import React, { useLayoutEffect, useState } from "react";
-import {PayWithFlutterwave} from 'flutterwave-react-native';
-import { theme } from "../constants";
-import { PAYMENTTYPES } from "../data/dummy-data";
-import { TextInput } from "react-native-paper";
-import { Row } from "../utilities/components/common";
-import { PrimaryButton } from "../shared/components/Button";
-import { formatNumber } from "../utilities/formatNumber";
-import { useDispatch } from "react-redux";
-import { toggleFullIsLoading } from "../slices/globalSlice";
+import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { PayWithFlutterwave } from 'flutterwave-react-native';
+import { theme } from '../constants';
+import { PAYMENTTYPES } from '../data/dummy-data';
+import { TextInput } from 'react-native-paper';
+import { Row } from '../utilities/components/common';
+import { PrimaryButton } from '../shared/components/Button';
+import { formatNumber } from '../utilities/formatNumber';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleFullIsLoading } from '../slices/globalSlice';
+import {
+  selectPayment,
+  selectRecordTransaction,
+  paymentStates,
+  recordPaymentTransaction,
+  resetPaymentRecordStatus,
+  fetchPayments,
+} from '../slices/paymentSlice';
+import useUser from '../hooks/useUser';
 
 const PayDuesScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const payId = route.params.paymentId;
-  const [paymentDetails, setPaymentDetails] = useState(
-    PAYMENTTYPES.find((d) => d.id == payId)
+  const { user, token } = useUser();
+
+  const { data } = useSelector(selectPayment);
+  const { status: recordStatus } = useSelector(
+    selectRecordTransaction
   );
+
+  const [paymentDetails] = useState(data.find((d) => d._id == payId));
+
+  console.log({ paymentDetails });
 
   useLayoutEffect(() => {
     const paymentTitle = paymentDetails.title;
@@ -27,26 +43,48 @@ const PayDuesScreen = ({ route, navigation }) => {
 
   const handleOnRedirect = (data) => {
     // {"status": "successful", "transaction_id": "4014843", "tx_ref": "flw_tx_ref_uRh1wIsnpt"}
-    console.log(data);
-    if (data.status === "successful") {
-      // register payment in backend
-      navigation.navigate("PaySuccess", {
-        cardName: "Charis Bank",
+    console.log({ flw: data });
+    if (data.status === 'successful') {
+      dispatch(toggleFullIsLoading());
+      dispatch(
+        recordPaymentTransaction({
+          tx_ref: data.tx_ref,
+          tx_id: data.transaction_id,
+          amount: paymentDetails.price,
+          payment_id: payId,
+          token,
+        })
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (recordStatus === paymentStates.FETCHED) {
+      dispatch(toggleFullIsLoading());
+      dispatch(fetchPayments(token));
+      navigation.navigate('PaySuccess', {
+        cardName: 'Charis Bank',
         paymentFor: paymentDetails.title,
         paymentMethod: 'card',
         amount: paymentDetails.price,
-        date: new Date()
+        date: new Date(),
       });
     }
-  };
-  
+
+    return () => {
+      dispatch(resetPaymentRecordStatus());
+    };
+  }, [recordStatus]);
+
   const generateTransactionRef = (length) => {
     var result = '';
     var characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
     for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      result += characters.charAt(
+        Math.floor(Math.random() * charactersLength)
+      );
     }
     return `flw_tx_ref_${result}`;
   };
@@ -66,7 +104,12 @@ const PayDuesScreen = ({ route, navigation }) => {
         <Text style={styles.sectionTitle}>Amount</Text>
         <View style={styles.priceContainer}>
           <Text style={styles.paymentPrice}>
-            ₦{formatNumber(paymentDetails.price)}
+            ₦
+            {formatNumber(
+              paymentDetails?.multiple_levels
+                ? paymentDetails?.level_dues[user.currentLevel]
+                : paymentDetails.price
+            )}
           </Text>
         </View>
       </View>
@@ -75,26 +118,27 @@ const PayDuesScreen = ({ route, navigation }) => {
         onRedirect={handleOnRedirect}
         options={{
           tx_ref: generateTransactionRef(10),
-          authorization: 'FLWPUBK_TEST-ec94e2d5babcb235f2b1bf4ee68a8c00-X',
+          authorization:
+            'FLWPUBK_TEST-ec94e2d5babcb235f2b1bf4ee68a8c00-X',
           customer: {
-            email: 'customer-email@example.com'
+            email: user.email,
           },
           amount: paymentDetails.price,
           currency: 'NGN',
-          payment_options: 'card'
+          payment_options: 'card',
         }}
         onDidInitialize={() => {
-          console.log('did init');
           dispatch(toggleFullIsLoading());
         }}
         onWillInitialize={() => {
-          console.log('will init');
           dispatch(toggleFullIsLoading());
         }}
         customButton={(props) => (
-      <Row>
-        <PrimaryButton onPress={props.onPress}>Proceed to Pay</PrimaryButton>
-      </Row>
+          <Row>
+            <PrimaryButton onPress={props.onPress}>
+              Proceed to Pay
+            </PrimaryButton>
+          </Row>
         )}
       />
     </View>
@@ -114,7 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.medium,
     fontSize: 16,
     color: theme.color.neutral700,
-    fontFamily: "archivo-regular600",
+    fontFamily: 'archivo-regular600',
   },
   priceContainer: {
     backgroundColor: theme.color.formFill,
@@ -123,12 +167,12 @@ const styles = StyleSheet.create({
   },
   paymentPrice: {
     fontSize: 14,
-    fontFamily: "archivo-regular",
+    fontFamily: 'archivo-regular',
   },
   inputs: {
     marginBottom: 16,
     borderRadius: 8,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     flex: 1,
     height: 48,
     paddingHorizontal: 16,
@@ -136,6 +180,6 @@ const styles = StyleSheet.create({
     borderColor: theme.color.primary400,
     borderWidth: 1,
     color: theme.color.neutral700,
-    fontFamily: "archivo-regular",
+    fontFamily: 'archivo-regular',
   },
 });

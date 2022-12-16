@@ -4,10 +4,12 @@ import {
   Image,
   StyleSheet,
   TextInput,
+  Dimensions,
 } from 'react-native';
 import React, { useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useNavigation } from '@react-navigation/native';
+import { SelectList } from 'react-native-dropdown-select-list';
 
 import {
   Container,
@@ -20,11 +22,21 @@ import { toggleFullIsLoading } from '../slices/globalSlice';
 import { ServiceFactory } from '../services/ServiceFactory';
 import { useDispatch, useSelector } from 'react-redux';
 
+const { width: SCREEN_WIDTH } = Dimensions.get('screen');
+
 const SignupScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const [selectedLanguage, setSelectedLanguage] = useState(true);
+  const [selected, setSelected] = useState('');
+
+  const data = [
+    { key: '1', value: '100' },
+    { key: '2', value: '200' },
+    { key: '3', value: '300' },
+    { key: '4', value: '400' },
+  ];
 
   const [details, setDetails] = useState({
     matNo: '',
@@ -32,6 +44,8 @@ const SignupScreen = () => {
     lastname: '',
     password: '',
     phoneNumber: '',
+    email: '',
+    currentLevel: '',
   });
 
   const onChangeHandler = (e, value) => {
@@ -76,6 +90,21 @@ const SignupScreen = () => {
 
           <Row>
             <Text style={styles.subTitle}>Create Account</Text>
+          </Row>
+
+          <Row style={{ alignSelf: 'flex-start' }}>
+            <Text style={styles.label}>Email</Text>
+          </Row>
+          <Row>
+            <TextInput
+              style={styles.inputs}
+              keyboardType="default"
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder="Email"
+              onChangeText={(e) => onChangeHandler('email', e)}
+              value={details.email}
+            />
           </Row>
 
           <Row style={{ alignSelf: 'flex-start' }}>
@@ -152,6 +181,38 @@ const SignupScreen = () => {
               placeholder="Create password"
               onChangeText={(e) => onChangeHandler('password', e)}
               value={details.password}
+            />
+          </Row>
+
+          <Row style={{ alignSelf: 'flex-start' }}>
+            <Text style={styles.label}>Current Level</Text>
+          </Row>
+          <Row style={{ marginBottom: 24 }}>
+            <SelectList
+              setSelected={(val) =>
+                onChangeHandler('currentLevel', val)
+              }
+              data={data}
+              save="value"
+              inputStyles={{
+                width: SCREEN_WIDTH - 95,
+              }}
+              dropdownStyles={{
+                width: SCREEN_WIDTH - 35,
+                borderColor: theme.color.primary400,
+                borderRadius: 8,
+                borderWidth: 1,
+              }}
+              boxStyles={{
+                borderColor: theme.color.primary400,
+                borderRadius: 8,
+                borderWidth: 1,
+              }}
+              dropdownTextStyles={{
+                fontSize: 16,
+                fontFamily: 'archivo-regular',
+                color: theme.color.neutral700,
+              }}
             />
           </Row>
 

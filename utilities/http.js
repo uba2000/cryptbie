@@ -4,8 +4,16 @@ const BASE_URL = 'http://localhost:3300';
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
+  // headers: { 'Content-Type': 'application/json' },
 });
+
+export const setHeaders = ({ token, ...others }) => {
+  return {
+    'content-type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    ...others,
+  };
+};
 
 // Send GET Requests
 export const get = async (payload) => {
@@ -22,7 +30,7 @@ async function ajax({
   method = 'GET',
   url,
   data,
-  // headers = [],
+  headers = { 'Content-Type': 'application/json' },
   before = () => {},
   after = () => {},
   mutate = false,
@@ -47,8 +55,8 @@ async function ajax({
     method,
     // Post Data
     data,
-    // // Request Headers
-    // headers,
+    // Request Headers
+    headers,
     // Axios Specific Properties
     ...axiosProps,
   })

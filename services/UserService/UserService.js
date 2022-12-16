@@ -59,10 +59,20 @@ export class UserService extends Base {
     firstname,
     password,
     lastname,
+    email,
+    currentLevel,
   }) {
     const { response, error } = await post({
       url: '/auth/register',
-      data: { matNo, phoneNumber, firstname, password, lastname },
+      data: {
+        matNo,
+        email,
+        phoneNumber,
+        currentLevel,
+        firstname,
+        password,
+        lastname,
+      },
     });
 
     if (error) {

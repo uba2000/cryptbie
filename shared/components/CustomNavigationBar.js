@@ -15,7 +15,7 @@ const CustomNavigationBar = (props) => {
   const navigator = useNavigation();
   const [visible, setVisible] = React.useState(false);
 
-  const { user } = useUser();
+  const { user, full_name } = useUser();
 
   if (index === 0) {
     return (
@@ -45,14 +45,14 @@ const CustomNavigationBar = (props) => {
               />
               <Column>
                 <Text style={styles.boldText}>
-                  {user.firstname} {user.lastname} (
+                  {full_name} (
                   <Text style={[styles.matNo, styles.boldText]}>
                     {user.matNo}
                   </Text>
                   )
                 </Text>
                 <Text style={styles.role}>
-                  {getRole(user.roles).n}
+                  {getRole(user?.roles).n}
                 </Text>
               </Column>
             </Row>
