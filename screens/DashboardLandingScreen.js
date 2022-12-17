@@ -10,6 +10,7 @@ import { theme } from "../constants";
 import { CommonText } from "../utilities/components/common";
 import ProfileScene from "../scenes/ProfileScene";
 import PaymentLogsScene from "../scenes/PaymentLogsScene";
+import useUser from "../hooks/useUser";
 
 const renderScene = ({ route, jumpTo }) => {
   switch (route.key) {
@@ -24,13 +25,13 @@ const renderScene = ({ route, jumpTo }) => {
 
 const DashboardLandingScreen = () => {
   const { showTabs } = useSelector((state) => state.navigation);
-  const { loggedInUser } = useSelector((state) => state.global);
+  const {isStudent} = useUser()
   const insets = useSafeAreaInsets();
   const [index, setIndex] = React.useState(0);
   const navigation = useNavigation();
 
   const [routes] = React.useState(
-    loggedInUser.role !== "L"
+    isStudent
       ? [
           {
             key: "home",

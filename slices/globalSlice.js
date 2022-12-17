@@ -3,21 +3,7 @@ import { createAction, createSlice } from '@reduxjs/toolkit';
 const initialState = {
   isLoggedIn: false,
   isBootstrapDataLoaded: false,
-  loggedInUser: {
-    __v: 0,
-    _id: '639a6e81ff4d9375a358ecc6',
-    createdAt: '2022-12-15T00:46:57.859Z',
-    firstname: 'Noel',
-    lastname: 'Uba',
-    matNo: 'psc1707588',
-    phoneNumber: '+2348177880475',
-    roles: { Student: 2439 },
-    currentLevel: '400',
-    token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzOWE2ZTgxZmY0ZDkzNzVhMzU4ZWNjNiIsImlhdCI6MTY3MTA2ODI3MiwiZXhwIjoxNjcxMjQxMDcyfQ.5V_EQtVyMJp3_RZVhhxfzPHxe2X7vBXV2inYBia3pmY',
-    updatedAt: '2022-12-15T00:46:57.859Z',
-    verified: 'false',
-  },
+  loggedInUser: null,
   password: '',
   loginDate: '',
   locations: [],

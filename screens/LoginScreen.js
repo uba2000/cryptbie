@@ -127,7 +127,7 @@ const LoginScreen = () => {
             />
           </Row>
           <Row style={{ alignSelf: 'flex-end', marginBottom: 66 }}>
-            <Text style={styles.label}>Forgot Password?</Text>
+            <Text style={[styles.label, {fontSize: 14}]}>Forgot Password?</Text>
           </Row>
 
           {loginError?.displayMessage && (

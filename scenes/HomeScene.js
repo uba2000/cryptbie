@@ -1,6 +1,6 @@
-import { FlatList, StyleSheet, View } from 'react-native';
-import { Badge, IconButton, List, Text } from 'react-native-paper';
-import React, { useEffect } from 'react';
+import { FlatList, StyleSheet, View, Image } from 'react-native';
+import { Badge, IconButton, List, Searchbar, Text, TouchableRipple } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
 
 import { PAYMENTTYPES } from '../data/dummy-data';
 import { theme } from '../constants';
@@ -19,6 +19,9 @@ import {
   selectPayment,
 } from '../slices/paymentSlice';
 import useThunkEffectCalls from '../hooks/useThunkEffectCalls';
+import { selectGlobal } from '../slices/globalSlice';
+import ImageButton from '../components/ImageButton';
+import { saveSearchedQuery } from '../slices/logsSlice';
 
 const GlanceRight = (props) => {
   return (
@@ -48,8 +51,13 @@ const GlanceRight = (props) => {
 const HomeScene = ({ jumpTo }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { user, full_name, token } = useUser();
+  const { user, full_name, token, isStudent } = useUser();
+  const {isLoggedIn, loggedInUser} = useSelector(selectGlobal)
   const { status, data } = useSelector(selectPayment);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  
+  if (!isLoggedIn) return null;
 
   const renderPaymentItem = ({ item }) => {
     console.log({ item });
@@ -103,7 +111,6 @@ const HomeScene = ({ jumpTo }) => {
   };
 
   function getPayments() {
-    console.log('in getPayments...');
     dispatch(fetchPayments(token));
   }
 
@@ -111,54 +118,118 @@ const HomeScene = ({ jumpTo }) => {
     getPayments();
   }, []);
 
-  console.log(data);
+  const studentPressed = () => {
+    jumpTo('logs');
+  }
+
+  const onSearchIconPressed = () => {
+    dispatch(saveSearchedQuery(searchQuery));
+    jumpTo('logs');
+  };
+
+  const showFilterDlg = () => setShowFilters(true);
 
   return (
-    <View
-      style={{
-        padding: 0,
-        flex: 1,
-        backgroundColor: theme.color.secondary,
-      }}
-    >
-      <View style={{ padding: 20 }}>
-        <Row style={{ alignSelf: 'center' }}>
-          <View style={styles.balanceCircle}>
-            <CommonText
-              style={{
-                fontSize: 20,
-                fontFamily: 'archivo-regular600',
-              }}
-            >
-              2018 / 2019
-            </CommonText>
-            <CommonText
-              style={{
-                fontFamily: 'raleway-regular700',
-                fontSize: 28,
-              }}
-            >
-              {user.currentLevel} Level
-            </CommonText>
-          </View>
-        </Row>
+    <View style={{padding: 0}}>
+    {isStudent ? (
+      <View
+        style={{
+          padding: 0,
+          flex: 1,
+          backgroundColor: isStudent ? theme.color.secondary : 'transparent',
+        }}
+      >
+        <View style={{ padding: 20 }}>
+          <Row style={{ alignSelf: 'center' }}>
+            <View style={styles.balanceCircle}>
+              <CommonText
+                style={{
+                  fontSize: 20,
+                  fontFamily: 'archivo-regular600',
+                }}
+              >
+                2018 / 2019
+              </CommonText>
+              <CommonText
+                style={{
+                  fontFamily: 'raleway-regular700',
+                  fontSize: 28,
+                }}
+              >
+                {user.currentLevel} Level
+              </CommonText>
+            </View>
+          </Row>
 
-        <View style={{ marginTop: 20 }}>
-          {/* TODO: if lecturer, list payments lecturer can see */}
-          {/* TODO: else list all fees for current student... */}
-          <Text style={styles.sectionTitle}>Available Payments</Text>
-          {status === paymentStates.FETCHING && (
-            <Text>Loading...</Text>
-          )}
-          {status === paymentStates.FETCHED && (
-            <FlatList
-              data={data}
-              keyExtractor={(item) => item._id}
-              renderItem={renderPaymentItem}
-            />
-          )}
+          <View style={{ marginTop: 20 }}>
+            {/* TODO: if lecturer, list payments lecturer can see */}
+            {/* TODO: else list all fees for current student... */}
+            <Text style={styles.sectionTitle}>Available Payments</Text>
+            {status === paymentStates.FETCHING && (
+              <Text>Loading...</Text>
+            )}
+            {status === paymentStates.FETCHED && (
+              <FlatList
+                data={data}
+                keyExtractor={(item) => item._id}
+                renderItem={renderPaymentItem}
+              />
+            )}
+          </View>
         </View>
       </View>
+      ) : (
+      <>
+        <View
+          style={{ position: 'absolute', left: 0, top: 0, height: 20, width: '100%', backgroundColor: theme.color.secondary }}
+        ></View>      
+        <View
+          style={{
+            padding: 20, paddingTop: 30,
+            flex: 1,
+            backgroundColor: isStudent ? theme.color.secondary : 'transparent',
+          }}
+        >
+          <View style={{ marginTop: 20 }}>
+            <Text style={{ marginBottom: theme.spacing.medium, fontSize: 16 }}>Track Payment</Text>
+            <View style={styles.surfaceContainer}>
+              <TouchableRipple style={[styles.rippleButton, styles.shadow]} onPress={() => studentPressed()}>
+                <View style={{ alignItems: 'center' }}>
+                  <Image style={styles.rippleImage} source={require('../assets/images/btc.png')} />
+                  <Text style={{ fontFamily: 'archivo-regular'}}>Student Payment</Text>
+                </View>
+              </TouchableRipple>
+            </View>
+          </View>
+          {/* <Portal>
+            <OrderFilterDialog
+              open={showFilters}
+              setOpen={setShowFilters}
+              // onApplyOrderFilters={(args: ORDERFILTER) => setFilter(args)}
+            />
+          </Portal> */}
+        </View>
+        <View style={{ position: 'absolute', top: 0, left: 20, right: 0, paddingRight: 25 }}>
+          <View style={{ flexDirection: 'row', width: '100%' }}>
+            <Searchbar
+              onIconPress={onSearchIconPressed}
+              style={{ flex: 1, maxHeight: 40 }}
+              inputStyle={{ fontSize: 14, lineHeight: 18, fontFamily: 'archivo-regular' }}
+              placeholder="Search by Student Name"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            <ImageButton
+              onPress={showFilterDlg}
+              style={[
+                styles.shadow,
+                { backgroundColor: 'white', marginLeft: 20, width: 40, height: 40, borderRadius: 8 }
+              ]}
+            />
+          </View>
+        </View>
+      </>
+    )}
     </View>
   );
 };
@@ -233,5 +304,29 @@ const styles = StyleSheet.create({
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
+    elevation: 4,
+  },
+  rippleButton: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    height: 93,
+    width: 93,
+    maxWidth: 150,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderRadius: 8
+  },
+  rippleImage: {
+    width: 40,
+    height: 40,
+    marginBottom: 8
+  },
+  surfaceContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingTop: 5
   },
 });
