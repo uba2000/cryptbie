@@ -128,7 +128,10 @@ const PaymentLogsScene = () => {
           keyExtractor={(item) => item._id}
           renderSectionHeader={({ section }) => (
             <List.Subheader
-              style={{ backgroundColor: '#1B9AA9', color: '#fff' }}
+              style={{
+                backgroundColor: theme.color.primary400,
+                color: '#fff',
+              }}
             >
               {section.key}
             </List.Subheader>
