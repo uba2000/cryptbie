@@ -31,20 +31,30 @@ export class UserService extends Base {
     if (response) {
       const { data } = response;
       console.log('data.data', {
-        ...data.data,
-        token: data.token,
+        ...data,
       });
-      this.dispatch(
-        setLoggedIn({
-          isLoggedIn: true,
-          user: {
-            ...data.data,
-            token: data.token,
-          },
-          logInDate: new Date(),
-        })
-      );
-      return Promise.resolve(true);
+      if (data.status === 'fail') {
+        this.dispatch(
+          setLoginError({
+            displayMessage: data.message,
+            errorId: '',
+            errorMessage: data.message,
+          })
+        );
+        return Promise.reject(false);
+      } else {
+        this.dispatch(
+          setLoggedIn({
+            isLoggedIn: true,
+            user: {
+              ...data.data,
+              token: data.token,
+            },
+            logInDate: new Date(),
+          })
+        );
+        return Promise.resolve(true);
+      }
     } else {
       // login failed - set a message
       this.dispatch(setLoggedOut());
@@ -76,17 +86,29 @@ export class UserService extends Base {
         ...data.data,
         token: data.token,
       });
-      this.dispatch(
-        setLoggedIn({
-          isLoggedIn: true,
-          user: {
-            ...data.data,
-            token: data.token,
-          },
-          logInDate: new Date(),
-        })
-      );
-      return Promise.resolve(true);
+
+      if (data.status === 'fail') {
+        this.dispatch(
+          setLoginError({
+            displayMessage: data.message,
+            errorId: '',
+            errorMessage: data.message,
+          })
+        );
+        return Promise.reject(false);
+      } else {
+        this.dispatch(
+          setLoggedIn({
+            isLoggedIn: true,
+            user: {
+              ...data.data,
+              token: data.token,
+            },
+            logInDate: new Date(),
+          })
+        );
+        return Promise.resolve(true);
+      }
     } else {
       // login failed - set a message
       this.dispatch(setLoggedOut());
