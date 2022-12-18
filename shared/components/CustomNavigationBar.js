@@ -173,11 +173,6 @@ const CustomNavigationBar = (props) => {
           fontFamily: 'archivo-regular600',
         }}
       />
-      <Appbar.Action
-        icon={require('../../assets/images/bell-notification.png')}
-        onPress={() => {}}
-        color={theme.color.primary400}
-      />
     </Appbar.Header>
   );
 };

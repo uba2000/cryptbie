@@ -5,7 +5,7 @@ import BottomDrawer from '../shared/components/ShareDrawer';
 import { PrimaryButton } from '../shared/components/Button';
 import { Row } from '../utilities/components/common';
 import ShareDrawer from '../shared/components/ShareDrawer';
-import { List } from "react-native-paper";
+import { List } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { toggleSharedReceiptDrawer } from '../slices/globalSlice';
 import { formatNumber } from '../utilities/formatNumber';
@@ -17,15 +17,27 @@ function PaymentReceiptScreen({ route }) {
     name,
     paymentType,
     paidWith,
+    txn_id,
+    txn_ref,
+    amount,
     date,
   } = route.params;
+
+  console.log({ params: route.params });
   return (
     <>
       <View style={styles.screen}>
         <Text style={styles.transactionText}>Due Paid</Text>
-        <Text style={styles.transactionSubText}>Below are the details of your transaction</Text>
+        <Text style={styles.transactionSubText}>
+          Below are the details of your transaction
+        </Text>
 
-        <Row style={[{ justifyContent: "space-between" }, styles.paymentBox]}>
+        <Row
+          style={[
+            { justifyContent: 'space-between' },
+            styles.paymentBox,
+          ]}
+        >
           <View style={{ flex: 1 }}>
             <View style={styles.detailBox}>
               <Text style={styles.detailTitle}>Student Name:</Text>
@@ -60,7 +72,27 @@ function PaymentReceiptScreen({ route }) {
               <Text style={styles.detailTitle}>Amount Paid:</Text>
               <Row>
                 <Text style={styles.detailValue}>
-                  ₦{formatNumber(paymentType?.price)}
+                  ₦{formatNumber(amount)}
+                  {/* ₦1000 */}
+                </Text>
+              </Row>
+            </View>
+
+            <View style={styles.detailBox}>
+              <Text style={styles.detailTitle}>Transaction ID:</Text>
+              <Row>
+                <Text style={styles.detailValue}>
+                  {txn_id}
+                  {/* ₦1000 */}
+                </Text>
+              </Row>
+            </View>
+
+            <View style={styles.detailBox}>
+              <Text style={styles.detailTitle}>Transaction Ref:</Text>
+              <Row>
+                <Text style={styles.detailValue}>
+                  {txn_ref}
                   {/* ₦1000 */}
                 </Text>
               </Row>
@@ -77,14 +109,11 @@ function PaymentReceiptScreen({ route }) {
           </View>
         </Row>
         <Row>
-          <PrimaryButton
-            onPress={() => { }}
-          >
+          <PrimaryButton onPress={() => {}}>
             Download receipt
           </PrimaryButton>
         </Row>
       </View>
-      
     </>
   );
 }
@@ -102,30 +131,30 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     fontSize: 24,
     color: theme.color.neutral700,
-    fontFamily: "archivo-regular600",
+    fontFamily: 'archivo-regular600',
   },
   transactionSubText: {
     marginBottom: 16,
-    fontFamily: "archivo-regular",
-    color: theme.color.neutral500
+    fontFamily: 'archivo-regular',
+    color: theme.color.neutral500,
   },
   detailBox: {
-    borderColor: "#D4DBDE",
+    borderColor: '#D4DBDE',
     borderBottomWidth: 1,
     padding: 0,
     paddingBottom: 23,
     paddingHorizontal: 16,
     paddingTop: 18,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },  
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   detailTitle: {
-    fontFamily: "archivo-regular",
+    fontFamily: 'archivo-regular',
     fontSize: 16,
     color: theme.color.neutral500,
   },
   detailValue: {
-    fontFamily: "archivo-regular",
+    fontFamily: 'archivo-regular',
     fontSize: 14,
     color: theme.color.neutral700,
     maxWidth: 200,
@@ -133,7 +162,7 @@ const styles = StyleSheet.create({
     // textTransform: 'capitalize'
   },
   detailSubValue: {
-    fontFamily: "archivo-regular",
+    fontFamily: 'archivo-regular',
     color: theme.color.neutral500,
     marginLeft: 4,
   },
@@ -142,13 +171,13 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 8,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
-    shadowColor: "#171717",
+    shadowColor: '#171717',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
     // paddingVertical: 8,
     elevation: 2,
-    backgroundColor: "white",
-    marginBottom: 36
+    backgroundColor: 'white',
+    marginBottom: 36,
   },
-})
+});

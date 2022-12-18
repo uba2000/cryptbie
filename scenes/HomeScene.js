@@ -1,5 +1,12 @@
 import { FlatList, StyleSheet, View, Image } from 'react-native';
-import { Badge, IconButton, List, Searchbar, Text, TouchableRipple } from 'react-native-paper';
+import {
+  Badge,
+  IconButton,
+  List,
+  Searchbar,
+  Text,
+  TouchableRipple,
+} from 'react-native-paper';
 import React, { useEffect, useState } from 'react';
 
 import { PAYMENTTYPES } from '../data/dummy-data';
@@ -15,13 +22,23 @@ import useUser from '../hooks/useUser';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchPayments,
+  lecturerFetchPaymentTypes,
   paymentStates,
   selectPayment,
 } from '../slices/paymentSlice';
 import useThunkEffectCalls from '../hooks/useThunkEffectCalls';
-import { selectGlobal } from '../slices/globalSlice';
+import {
+  selectGlobal,
+  toggleFullIsLoading,
+} from '../slices/globalSlice';
 import ImageButton from '../components/ImageButton';
-import { saveSearchedQuery } from '../slices/logsSlice';
+import {
+  fetchPaymentLogs,
+  logStates,
+  resetLogsStatus,
+  saveSearchedQuery,
+  selectLogs,
+} from '../slices/logsSlice';
 
 const GlanceRight = (props) => {
   return (
@@ -52,11 +69,12 @@ const HomeScene = ({ jumpTo }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { user, full_name, token, isStudent } = useUser();
-  const {isLoggedIn, loggedInUser} = useSelector(selectGlobal)
+  const { isLoggedIn, loggedInUser } = useSelector(selectGlobal);
   const { status, data } = useSelector(selectPayment);
+  const [paymentListLoading, setPaymentListLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  
+
   if (!isLoggedIn) return null;
 
   const renderPaymentItem = ({ item }) => {
@@ -111,7 +129,11 @@ const HomeScene = ({ jumpTo }) => {
   };
 
   function getPayments() {
-    dispatch(fetchPayments(token));
+    if (isStudent) {
+      dispatch(fetchPayments(token));
+    } else {
+      dispatch(lecturerFetchPaymentTypes());
+    }
   }
 
   useEffect(() => {
@@ -119,117 +141,173 @@ const HomeScene = ({ jumpTo }) => {
   }, []);
 
   const studentPressed = () => {
-    jumpTo('logs');
-  }
+    dispatch(fetchPaymentLogs());
+    dispatch(toggleFullIsLoading());
+  };
+
+  const { status: logsStatus, logs } = useSelector(selectLogs);
+
+  useEffect(() => {
+    if (logsStatus === logStates.FETCHED) {
+      dispatch(resetLogsStatus());
+      dispatch(toggleFullIsLoading());
+      jumpTo('logs');
+    }
+  }, [logsStatus]);
+
+  useEffect(() => {
+    if (status === paymentStates.FETCHED) {
+      setPaymentListLoading(false);
+    }
+  }, [status]);
 
   const onSearchIconPressed = () => {
     dispatch(saveSearchedQuery(searchQuery));
+    // dispatch();
     jumpTo('logs');
   };
 
   const showFilterDlg = () => setShowFilters(true);
 
   return (
-    <View style={{padding: 0}}>
-    {isStudent ? (
-      <View
-        style={{
-          padding: 0,
-          flex: 1,
-          backgroundColor: isStudent ? theme.color.secondary : 'transparent',
-        }}
-      >
-        <View style={{ padding: 20 }}>
-          <Row style={{ alignSelf: 'center' }}>
-            <View style={styles.balanceCircle}>
-              <CommonText
-                style={{
-                  fontSize: 20,
-                  fontFamily: 'archivo-regular600',
-                }}
-              >
-                2018 / 2019
-              </CommonText>
-              <CommonText
-                style={{
-                  fontFamily: 'raleway-regular700',
-                  fontSize: 28,
-                }}
-              >
-                {user.currentLevel} Level
-              </CommonText>
-            </View>
-          </Row>
-
-          <View style={{ marginTop: 20 }}>
-            {/* TODO: if lecturer, list payments lecturer can see */}
-            {/* TODO: else list all fees for current student... */}
-            <Text style={styles.sectionTitle}>Available Payments</Text>
-            {status === paymentStates.FETCHING && (
-              <Text>Loading...</Text>
-            )}
-            {status === paymentStates.FETCHED && (
-              <FlatList
-                data={data}
-                keyExtractor={(item) => item._id}
-                renderItem={renderPaymentItem}
-              />
-            )}
-          </View>
-        </View>
-      </View>
-      ) : (
-      <>
-        <View
-          style={{ position: 'absolute', left: 0, top: 0, height: 20, width: '100%', backgroundColor: theme.color.secondary }}
-        ></View>      
+    <View style={{ padding: 0, flex: 1 }}>
+      {isStudent ? (
         <View
           style={{
-            padding: 20, paddingTop: 30,
+            padding: 0,
             flex: 1,
-            backgroundColor: isStudent ? theme.color.secondary : 'transparent',
+            backgroundColor: 'transparent',
           }}
         >
-          <View style={{ marginTop: 20 }}>
-            <Text style={{ marginBottom: theme.spacing.medium, fontSize: 16 }}>Track Payment</Text>
-            <View style={styles.surfaceContainer}>
-              <TouchableRipple style={[styles.rippleButton, styles.shadow]} onPress={() => studentPressed()}>
-                <View style={{ alignItems: 'center' }}>
-                  <Image style={styles.rippleImage} source={require('../assets/images/btc.png')} />
-                  <Text style={{ fontFamily: 'archivo-regular'}}>Student Payment</Text>
-                </View>
-              </TouchableRipple>
+          <View style={{ padding: 20 }}>
+            <Row style={{ alignSelf: 'center' }}>
+              <View style={styles.balanceCircle}>
+                <CommonText
+                  style={{
+                    fontSize: 20,
+                    fontFamily: 'archivo-regular600',
+                  }}
+                >
+                  2018 / 2019
+                </CommonText>
+                <CommonText
+                  style={{
+                    fontFamily: 'raleway-regular700',
+                    fontSize: 28,
+                  }}
+                >
+                  {user.currentLevel} Level
+                </CommonText>
+              </View>
+            </Row>
+
+            <View style={{ marginTop: 20 }}>
+              {/* TODO: if lecturer, list payments lecturer can see */}
+              {/* TODO: else list all fees for current student... */}
+              <Text style={styles.sectionTitle}>
+                Available Payments
+              </Text>
+              {paymentListLoading && <Text>Loading...</Text>}
+              {!paymentListLoading && (
+                <FlatList
+                  data={data}
+                  keyExtractor={(item) => item._id}
+                  renderItem={renderPaymentItem}
+                />
+              )}
             </View>
           </View>
-          {/* <Portal>
+        </View>
+      ) : (
+        <>
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              height: 20,
+              width: '100%',
+              backgroundColor: theme.color.secondary,
+            }}
+          ></View>
+          <View
+            style={{
+              padding: 20,
+              paddingTop: 30,
+              flex: 1,
+              backgroundColor: isStudent
+                ? theme.color.secondary
+                : 'transparent',
+            }}
+          >
+            <View style={{ marginTop: 20 }}>
+              <Text
+                style={{
+                  marginTop: 16,
+                  marginBottom: theme.spacing.medium,
+                  fontSize: 16,
+                }}
+              >
+                Track Payment
+              </Text>
+              <View style={styles.surfaceContainer}>
+                <TouchableRipple
+                  style={[styles.rippleButton, styles.shadow]}
+                  onPress={() => studentPressed()}
+                >
+                  <View style={{ alignItems: 'center' }}>
+                    <Image
+                      style={styles.rippleImage}
+                      source={require('../assets/images/btc.png')}
+                    />
+                    <Text style={{ fontFamily: 'archivo-regular' }}>
+                      Student Payment
+                    </Text>
+                  </View>
+                </TouchableRipple>
+              </View>
+            </View>
+            {/* <Portal>
             <OrderFilterDialog
               open={showFilters}
               setOpen={setShowFilters}
               // onApplyOrderFilters={(args: ORDERFILTER) => setFilter(args)}
             />
           </Portal> */}
-        </View>
-        <View style={{ position: 'absolute', top: 0, left: 20, right: 0, paddingRight: 25 }}>
-          <View style={{ flexDirection: 'row', width: '100%' }}>
-            <Searchbar
-              onIconPress={onSearchIconPressed}
-              style={{ flex: 1, maxHeight: 40 }}
-              inputStyle={{ fontSize: 14, lineHeight: 18, fontFamily: 'archivo-regular' }}
-              placeholder="Search by Student Name"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            <ImageButton
+          </View>
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 20,
+              right: 0,
+              paddingRight: 25,
+            }}
+          >
+            <View style={{ flexDirection: 'row', width: '100%' }}>
+              <Searchbar
+                onIconPress={onSearchIconPressed}
+                style={{ flex: 1, maxHeight: 40 }}
+                inputStyle={{
+                  fontSize: 14,
+                  lineHeight: 18,
+                  fontFamily: 'archivo-regular',
+                }}
+                placeholder="Search by Student Name"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+              {/* <ImageButton
               onPress={showFilterDlg}
               style={[
                 styles.shadow,
                 { backgroundColor: 'white', marginLeft: 20, width: 40, height: 40, borderRadius: 8 }
               ]}
-            />
+            /> */}
+            </View>
           </View>
-        </View>
-      </>
-    )}
+        </>
+      )}
     </View>
   );
 };
@@ -317,16 +395,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
-    borderRadius: 8
+    borderRadius: 8,
   },
   rippleImage: {
     width: 40,
     height: 40,
-    marginBottom: 8
+    marginBottom: 8,
   },
   surfaceContainer: {
     display: 'flex',
     flexDirection: 'row',
-    paddingTop: 5
+    paddingTop: 5,
   },
 });

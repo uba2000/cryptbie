@@ -9,7 +9,8 @@ import {
 import useUser from '../hooks/useUser';
 
 const ProfileScene = () => {
-  const { full_name, user } = useUser();
+  const { full_name, user, isStudent, role } = useUser();
+  console.log({ user });
   return (
     <View
       style={{
@@ -31,12 +32,26 @@ const ProfileScene = () => {
         <CommonText style={styles.userNameText}>
           {full_name}
         </CommonText>
-        <CommonText style={styles.userEmailText}>
-          {user.email}
-        </CommonText>
-        <CommonText style={styles.matNo}>
-          ({user.matNo.toUpperCase()})
-        </CommonText>
+        {isStudent && (
+          <>
+            <CommonText style={styles.userEmailText}>
+              {user.email}
+            </CommonText>
+            <CommonText style={styles.matNo}>
+              ({user.matNo.toUpperCase()})
+            </CommonText>
+          </>
+        )}
+        {!isStudent && (
+          <>
+            <CommonText style={styles.userEmailText}>
+              {role.n}
+            </CommonText>
+            {/* <CommonText style={styles.matNo}>
+              ({user.matNo.toUpperCase()})
+            </CommonText> */}
+          </>
+        )}
       </Column>
     </View>
   );

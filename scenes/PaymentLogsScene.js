@@ -1,97 +1,154 @@
-import { View, Text, StyleSheet, FlatList } from "react-native";
-import React from "react";
-import moment from "moment";
+import _ from 'lodash';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  SectionList,
+} from 'react-native';
+import {
+  IconButton,
+  Divider,
+  Portal,
+  Searchbar,
+  List,
+} from 'react-native-paper';
+import React, { useEffect } from 'react';
+import moment from 'moment';
 
-import { theme } from "../constants";
-import { Column, Row } from "../utilities/components/common";
-import { IconButton, List } from "react-native-paper";
-import { formatNumber } from "../utilities/formatNumber";
-import { LECTURERLOGS, PAYMENTTYPES } from "../data/dummy-data";
-import { useNavigation } from "@react-navigation/native";
-
-const GlanceRight = (props) => {
-  return (
-    <View style={styles.glanceRight}>
-      <Text style={{ fontFamily: "archivo-regular600", fontSize: 16 }}>
-        ₦{formatNumber(props.price)}
-      </Text>
-      <IconButton icon="chevron-right" />
-    </View>
-  );
-};
-
-const TitleSection = (props) => {
-
-  return (
-    <Column style={{ justifyContent: "center" }}>
-      <Text style={{ fontFamily: "archivo-regular600", fontSize: 16 }}>
-        {props.name}{" "}
-        <Text style={{ color: theme.color.neutral500 }}>({props.paymentType})</Text>
-      </Text>
-      <Text
-        style={{
-          fontFamily: "archivo-regular",
-          color: theme.color.neutral500,
-          fontSize: theme.fontSize.button,
-        }}
-      >
-        {moment(props.date).fromNow()}
-      </Text>
-    </Column>
-  );
-};
-
+import { theme } from '../constants';
+import { Column, Row } from '../utilities/components/common';
+import { formatNumber } from '../utilities/formatNumber';
+import { LECTURERLOGS, PAYMENTTYPES } from '../data/dummy-data';
+import {
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import PaymentLogItem from '../components/PaymentLogItem';
+import { selectPayment } from '../slices/paymentSlice';
 
 const PaymentLogsScene = () => {
   const navigation = useNavigation();
-  const PaymentItem = ({ item }) => {
-    const paymentType = PAYMENTTYPES.find(d => d.id === item.paymentType);
+  const dispatch = useDispatch();
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const { searchedQuery, logs } = useSelector((state) => state.logs);
+  const { data: allPaymentTypes } = useSelector(selectPayment);
 
-    function handlePress() {
-      navigation.navigate("PaymentReceipt", {
-        name: item.name,
-        paymentType,
-        date: item.date,
-        paidWith: item.paidWith,
+  useFocusEffect(
+    React.useCallback(() => {
+      setSearchQuery(searchedQuery); // prefill search value in case a user searched something from the home screen
+    }, [searchedQuery])
+  );
+
+  useEffect(() => {
+    groupOrders(searchQuery);
+  }, [searchQuery]);
+
+  const searchOrder = (query) => {
+    setSearchQuery(query);
+  };
+
+  const [sections, setSections] = React.useState([]);
+
+  const groupOrders = (searchQuery) => {
+    const sections = [];
+
+    let allLogs = [...logs];
+    // let allLogs = [...LECTURERLOGS];
+    if (searchQuery) {
+      searchQuery = searchQuery.toLowerCase();
+      allLogs = allLogs?.filter((log) => {
+        return (
+          log.name?.toLowerCase().includes(searchQuery) ||
+          // log.Patient?.toLowerCase().includes(searchQuery) ||
+          log.txn_id?.toString().toLowerCase().includes(searchQuery)
+        );
       });
     }
+    // take the orders and group them by date
+    const grouped = _.groupBy(allLogs, (log) => {
+      return log.createdAt.substring(0, 10);
+    });
 
-    return (
-      <List.Item
-        style={[styles.paymentItem]}
-        onPress={handlePress}
-        title={(props) => (
-          <TitleSection
-            {...props}
-            paymentType={paymentType.title}
-            date={item.date}
-            name={item.name}
-          />
-        )}
-        left={() => (
-          <List.Icon
-            style={styles.glanceLogo}
-            icon={require("../assets/images/btc.png")}
-          />
-        )}
-        right={(props) => <GlanceRight price={paymentType.price} {...props} />}
-      />
-    );
+    const groupKeys = _.keys(grouped).sort();
+    _.forEach(groupKeys, (key) => {
+      const section = { data: grouped[key], key };
+      sections.push(section);
+    });
+    setSections(sections);
   };
-  return (
-    <View
-      style={{ padding: 20, flex: 1, backgroundColor: theme.color.secondary }}
-    >
-      <Row style={{ marginBottom: 12 }}>
-        <Text style={styles.title}>All Payments</Text>
-        
-      </Row>
 
-      <FlatList
-        data={LECTURERLOGS}
-        keyExtractor={(item) => item.id}
-        renderItem={PaymentItem}
-      />
+  const gotoLogDetails = (item) => {
+    const paymentType = allPaymentTypes.find(
+      (d) => d._id === item.payment_id
+    );
+
+    navigation.navigate('PaymentReceipt', {
+      name: item.name,
+      paymentType: paymentType,
+      date: item.createdAt,
+      paidWith: 'Card',
+      txn_id: item.txn_id,
+      txn_ref: item.txn_ref,
+      amount: item.amount,
+    });
+  };
+
+  return (
+    <View style={styles.content}>
+      <View
+        style={{
+          flexDirection: 'row',
+          width: '100%',
+          marginRight: 10,
+        }}
+      >
+        <Searchbar
+          style={{ flex: 1, maxHeight: 40 }}
+          inputStyle={{ fontSize: 16, lineHeight: 21 }}
+          placeholder="Search by name or keyword"
+          value={searchQuery}
+          onChangeText={(query) => searchOrder(query)}
+        />
+      </View>
+
+      <View
+        style={{
+          width: '100%',
+          flex: 1,
+          marginBottom: 0,
+          marginTop: 15,
+          marginLeft: -8,
+        }}
+      >
+        <SectionList
+          ItemSeparatorComponent={Divider}
+          sections={sections}
+          keyExtractor={(item) => item._id}
+          renderSectionHeader={({ section }) => (
+            <List.Subheader
+              style={{ backgroundColor: '#1B9AA9', color: '#fff' }}
+            >
+              {section.key}
+            </List.Subheader>
+          )}
+          renderItem={({ item }) => (
+            <PaymentLogItem
+              log={item}
+              // selectable={selectable}
+              // selected={selected}
+              dispatch={dispatch}
+              logPressed={() => gotoLogDetails(item)}
+            />
+          )}
+        />
+        {/* <FlatList
+          data={LECTURERLOGS}
+          keyExtractor={(item) => item.id}
+          renderItem={PaymentLogItem}
+        /> */}
+      </View>
     </View>
   );
 };
@@ -99,8 +156,15 @@ const PaymentLogsScene = () => {
 export default PaymentLogsScene;
 
 const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 20,
+    paddingBottom: 0,
+    paddingHorizontal: 20,
+  },
   title: {
-    fontFamily: "archivo-regular600",
+    fontFamily: 'archivo-regular600',
     fontSize: 16,
   },
   paymentItem: {
@@ -109,17 +173,17 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 8,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
-    shadowColor: "#171717",
+    shadowColor: '#171717',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 2,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     marginBottom: 12,
   },
   glanceRight: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   glanceLogo: {
     width: 40,

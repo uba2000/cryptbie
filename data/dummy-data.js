@@ -14,4 +14,10 @@ export const LECTURERLOGS = [
   new Log("1", "Fumya Takeoff", "2022-11-18T11:37:40.172Z", "3", "card"),
   new Log("2", "Cherrycute Offset", "2022-11-18T11:47:21.075Z", "2", "card"),
   new Log("3", "Seasea Young-John", "2022-11-18T11:48:08.095Z", "3", "card"),
+  new Log("4", "Fumya Takeoff", "2022-11-18T11:37:40.172Z", "3", "card"),
+  new Log("5", "Cherrycute Offset", "2022-11-18T11:47:21.075Z", "2", "card"),
+  new Log("6", "Seasea Young-John", "2022-11-18T11:48:08.095Z", "3", "card"),
+  new Log("7", "Fumya Takeoff", "2022-11-18T11:37:40.172Z", "3", "card"),
+  new Log("8", "Cherrycute Offset", "2022-11-18T11:47:21.075Z", "2", "card"),
+  new Log("9", "Seasea Young-John", "2022-11-18T11:48:08.095Z", "3", "card"),
 ];

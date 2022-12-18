@@ -1,4 +1,4 @@
-import { Image, StyleSheet, TextInput, View } from 'react-native';
+import { Image, StyleSheet, TextInput } from 'react-native';
 import React, { useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useNavigation } from '@react-navigation/native';
@@ -19,7 +19,7 @@ import { toggleFullIsLoading } from '../slices/globalSlice';
 import { ServiceFactory } from '../services/ServiceFactory';
 import { Text } from 'react-native-paper';
 
-const LoginScreen = () => {
+const LecturerLoginScreen = () => {
   const navigation = useNavigation();
 
   const [email, setEmail] = React.useState('');
@@ -29,7 +29,7 @@ const LoginScreen = () => {
   const [isPwdError, setIsPwdError] = React.useState(false);
 
   const [details, setDetails] = useState({
-    matNo: '',
+    loginId: '',
     password: '',
   });
 
@@ -45,22 +45,20 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
 
   const handleLogin = async () => {
-    await login(details.matNo, details.password);
-  };
-
-  const handleLecturerLogin = async () => {
-    // await login('lecturer@gmail.com', 'test1234');
-    navigation.navigate('LecturerLogin');
+    await login(details.loginId, details.password);
   };
 
   const togglePwdIsShowing = () => setIsPwdShowing(!isPwdShowing);
 
-  const login = async (matNo, password) => {
+  const login = async (loginId, password) => {
     dispatch(toggleFullIsLoading());
 
     try {
       const userService = ServiceFactory.use('user');
-      const success = await userService.login(matNo, password);
+      const success = await userService.lecturerLogin(
+        loginId,
+        password
+      );
 
       if (success) {
         navigation.navigate('DashboardLanding');
@@ -81,7 +79,7 @@ const LoginScreen = () => {
         extraScrollHeight={Platform.OS === 'ios' ? 0 : 62}
         enableOnAndroid={true}
       >
-        <View
+        <Column
           style={{
             alignItems: 'center',
             justifyContent: 'center',
@@ -95,27 +93,27 @@ const LoginScreen = () => {
           </Row> */}
 
           <Row>
-            <Text style={styles.title}>Welcome back</Text>
+            <Text style={styles.title}>Welcome Back sir/ma</Text>
           </Row>
 
           <Row>
             <Text style={styles.subTitle}>
-              Enter your detsils below
+              Login to view all student payment logs
             </Text>
           </Row>
 
           <Row style={{ alignSelf: 'flex-start' }}>
-            <Text style={styles.label}>Matric Number</Text>
+            <Text style={styles.label}>Login ID</Text>
           </Row>
           <Row>
             <TextInput
               style={styles.inputs}
-              keyboardType="email-address"
+              keyboardType="default"
               autoCapitalize="none"
               autoCorrect={false}
-              placeholder="Matric Number"
-              onChangeText={(e) => onChangeHandler('matNo', e)}
-              value={details.matNo}
+              placeholder="Login ID"
+              onChangeText={(e) => onChangeHandler('loginId', e)}
+              value={details.loginId}
             />
           </Row>
 
@@ -160,19 +158,13 @@ const LoginScreen = () => {
               Login
             </PrimaryButton>
           </Row>
-
-          <Row style={{ marginTop: 30 }}>
-            <OutlineButton onPress={() => handleLecturerLogin()}>
-              Login as Lecturer
-            </OutlineButton>
-          </Row>
-        </View>
+        </Column>
       </KeyboardAwareScrollView>
     </SafeArea>
   );
 };
 
-export default LoginScreen;
+export default LecturerLoginScreen;
 
 const styles = StyleSheet.create({
   title: {

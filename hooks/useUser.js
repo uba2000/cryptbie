@@ -10,9 +10,11 @@ const useUser = () => {
   return {
     user,
     role: getRole(user?.roles),
-    isStudent: user?.roles.c < ROLESNUMBERS[user?.roles.c],
-    full_name: `${user.firstname} ${user.lastname}`,
-    token: user.token,
+    isStudent: user
+      ? getRole(user?.roles).c < ROLESNUMBERS['Lecturer']
+      : null,
+    full_name: `${user?.firstname} ${user?.lastname}`,
+    token: user ? user?.token : '',
   };
 };
 

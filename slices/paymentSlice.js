@@ -31,9 +31,28 @@ export const fetchPayments = createAsyncThunk(
         url: '/user/get-level-payments',
         headers: setHeaders({ token }),
       });
+      console.log({ 'response.data.data': response.data.data });
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.toString());
+    }
+  }
+);
+
+export const lecturerFetchPaymentTypes = createAsyncThunk(
+  'payment/lecturerFetchPaymentTypes',
+  async (_, thunkApi) => {
+    try {
+      const globalState = thunkApi.getState().global;
+      const { response } = await get({
+        url: '/lecturer/student-payment-types',
+        headers: setHeaders({
+          token: globalState.loggedInUser.token,
+        }),
+      });
+      return response.data.data;
+    } catch (error) {
+      return thunkApi.rejectWithValue(error.toString());
     }
   }
 );
@@ -76,6 +95,21 @@ export const paymentSlice = createSlice({
       state.status = paymentStates.FETCHED;
     });
     builder.addCase(fetchPayments.rejected, (state) => {
+      state.status = paymentStates.ERROR;
+    });
+
+    // lecturerFetchPaymentTypes reducer
+    builder.addCase(lecturerFetchPaymentTypes.pending, (state) => {
+      state.status = paymentStates.FETCHING;
+    });
+    builder.addCase(
+      lecturerFetchPaymentTypes.fulfilled,
+      (state, action) => {
+        state.data = action.payload;
+        state.status = paymentStates.FETCHED;
+      }
+    );
+    builder.addCase(lecturerFetchPaymentTypes.rejected, (state) => {
       state.status = paymentStates.ERROR;
     });
 
