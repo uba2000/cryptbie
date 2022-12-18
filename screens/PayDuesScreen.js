@@ -50,7 +50,9 @@ const PayDuesScreen = ({ route, navigation }) => {
         recordPaymentTransaction({
           tx_ref: data.tx_ref,
           tx_id: data.transaction_id,
-          amount: paymentDetails.price,
+          amount: paymentDetails.multiple_levels
+            ? paymentDetails.level_dues[user.currentLevel]
+            : paymentDetails.price,
           payment_id: payId,
           token,
         })
@@ -66,7 +68,9 @@ const PayDuesScreen = ({ route, navigation }) => {
         cardName: 'Charis Bank',
         paymentFor: paymentDetails.title,
         paymentMethod: 'card',
-        amount: paymentDetails.price,
+        amount: paymentDetails.multiple_levels
+          ? paymentDetails.level_dues[user.currentLevel]
+          : paymentDetails.price,
         date: new Date(),
       });
     }
@@ -123,7 +127,9 @@ const PayDuesScreen = ({ route, navigation }) => {
           customer: {
             email: user.email,
           },
-          amount: paymentDetails.price,
+          amount: paymentDetails.multiple_levels
+            ? paymentDetails.level_dues[user.currentLevel]
+            : paymentDetails.price,
           currency: 'NGN',
           payment_options: 'card',
         }}

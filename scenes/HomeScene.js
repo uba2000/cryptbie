@@ -7,9 +7,8 @@ import {
   Text,
   TouchableRipple,
 } from 'react-native-paper';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 
-import { PAYMENTTYPES } from '../data/dummy-data';
 import { theme } from '../constants';
 import {
   Column,
@@ -26,12 +25,10 @@ import {
   paymentStates,
   selectPayment,
 } from '../slices/paymentSlice';
-import useThunkEffectCalls from '../hooks/useThunkEffectCalls';
 import {
   selectGlobal,
   toggleFullIsLoading,
 } from '../slices/globalSlice';
-import ImageButton from '../components/ImageButton';
 import {
   fetchPaymentLogs,
   logStates,
@@ -68,7 +65,7 @@ const GlanceRight = (props) => {
 const HomeScene = ({ jumpTo }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { user, full_name, token, isStudent } = useUser();
+  const { user, full_name, token, role, isStudent } = useUser();
   const { isLoggedIn, loggedInUser } = useSelector(selectGlobal);
   const { status, data } = useSelector(selectPayment);
   const [paymentListLoading, setPaymentListLoading] = useState(true);
@@ -78,7 +75,6 @@ const HomeScene = ({ jumpTo }) => {
   if (!isLoggedIn) return null;
 
   const renderPaymentItem = ({ item }) => {
-    console.log({ item });
     const paymentType = data.find((d) => d._id === item._id);
 
     function handlePress() {
@@ -88,8 +84,13 @@ const HomeScene = ({ jumpTo }) => {
         navigation.navigate('PaymentReceipt', {
           name: full_name, // pass in user name after login...
           paymentType,
+          txn_id: item.txn_id,
+          txn_ref: item.txn_ref,
           date: item.createdAt || '',
-          paidWith: item.paidWith || '',
+          paidWith: 'Card',
+          amount: paymentType.multiple_levels
+            ? paymentType.level_dues[user.currentLevel]
+            : paymentType.price,
         });
         return;
       }
@@ -136,7 +137,7 @@ const HomeScene = ({ jumpTo }) => {
     }
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     getPayments();
   }, []);
 

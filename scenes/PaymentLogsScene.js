@@ -73,7 +73,7 @@ const PaymentLogsScene = () => {
 
     const groupKeys = _.keys(grouped).sort();
     _.forEach(groupKeys, (key) => {
-      const section = { data: grouped[key], key };
+      const section = { data: grouped[key].reverse(), key };
       sections.push(section);
     });
     setSections(sections);
@@ -124,7 +124,7 @@ const PaymentLogsScene = () => {
       >
         <SectionList
           ItemSeparatorComponent={Divider}
-          sections={sections}
+          sections={sections.reverse()}
           keyExtractor={(item) => item._id}
           renderSectionHeader={({ section }) => (
             <List.Subheader
