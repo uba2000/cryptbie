@@ -1,4 +1,11 @@
-import { FlatList, StyleSheet, View, Image } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  Image,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
 import {
   Badge,
   IconButton,
@@ -23,6 +30,7 @@ import {
   fetchPayments,
   lecturerFetchPaymentTypes,
   paymentStates,
+  resetPaymentStatus,
   selectPayment,
 } from '../slices/paymentSlice';
 import {
@@ -71,6 +79,7 @@ const HomeScene = ({ jumpTo }) => {
   const [paymentListLoading, setPaymentListLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   if (!isLoggedIn) return null;
 
@@ -137,6 +146,12 @@ const HomeScene = ({ jumpTo }) => {
     }
   }
 
+  function refreshPage() {
+    getPayments();
+    setRefreshing(true);
+    // setPaymentListLoading(true);
+  }
+
   useLayoutEffect(() => {
     getPayments();
   }, []);
@@ -158,7 +173,9 @@ const HomeScene = ({ jumpTo }) => {
 
   useEffect(() => {
     if (status === paymentStates.FETCHED) {
-      setPaymentListLoading(false);
+      // setPaymentListLoading(false);
+      setRefreshing(false);
+      dispatch(resetPaymentStatus());
     }
   }, [status]);
 
@@ -211,6 +228,12 @@ const HomeScene = ({ jumpTo }) => {
               {paymentListLoading && <Text>Loading...</Text>}
               {!paymentListLoading && (
                 <FlatList
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={refreshPage}
+                    />
+                  }
                   data={data}
                   keyExtractor={(item) => item._id}
                   renderItem={renderPaymentItem}

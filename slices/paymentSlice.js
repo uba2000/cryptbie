@@ -84,6 +84,9 @@ export const paymentSlice = createSlice({
       state.recordTransaction.status =
         initialState.recordTransaction.status;
     },
+    resetPaymentStatus: (state) => {
+      state.status = initialState.status;
+    },
   },
   extraReducers: (builder) => {
     // fetchPayments reducer
@@ -135,4 +138,5 @@ export const selectRecordTransaction = (state) =>
   state.payment.recordTransaction;
 
 export default paymentSlice.reducer;
-export const { resetPaymentRecordStatus } = paymentSlice.actions;
+export const { resetPaymentRecordStatus, resetPaymentStatus } =
+  paymentSlice.actions;

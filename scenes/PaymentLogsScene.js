@@ -5,6 +5,7 @@ import {
   StyleSheet,
   FlatList,
   SectionList,
+  RefreshControl,
 } from 'react-native';
 import {
   IconButton,
@@ -13,7 +14,7 @@ import {
   Searchbar,
   List,
 } from 'react-native-paper';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 
 import { theme } from '../constants';
@@ -27,12 +28,20 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import PaymentLogItem from '../components/PaymentLogItem';
 import { selectPayment } from '../slices/paymentSlice';
+import {
+  fetchPaymentLogs,
+  resetLogsStatus,
+  logStates,
+} from '../slices/logsSlice';
+import { toggleFullIsLoading } from '../slices/globalSlice';
 
 const PaymentLogsScene = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = React.useState('');
-  const { searchedQuery, logs } = useSelector((state) => state.logs);
+  const { searchedQuery, logs, status } = useSelector(
+    (state) => state.logs
+  );
   const { data: allPaymentTypes } = useSelector(selectPayment);
 
   useFocusEffect(
@@ -73,10 +82,10 @@ const PaymentLogsScene = () => {
 
     const groupKeys = _.keys(grouped).sort();
     _.forEach(groupKeys, (key) => {
-      const section = { data: grouped[key].reverse(), key };
+      const section = { data: grouped[key], key };
       sections.push(section);
     });
-    setSections(sections);
+    setSections(sections.reverse());
   };
 
   const gotoLogDetails = (item) => {
@@ -94,6 +103,23 @@ const PaymentLogsScene = () => {
       amount: item.amount,
     });
   };
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  function refreshPage() {
+    dispatch(fetchPaymentLogs());
+    setRefreshing(true);
+    // dispatch(toggleFullIsLoading());
+  }
+
+  useEffect(() => {
+    if (status === logStates.FETCHED) {
+      setRefreshing(false);
+      groupOrders(searchQuery);
+      dispatch(toggleFullIsLoading());
+      // dispatch(resetLogsStatus());
+    }
+  }, [status]);
 
   return (
     <View style={styles.content}>
@@ -124,8 +150,14 @@ const PaymentLogsScene = () => {
       >
         <SectionList
           ItemSeparatorComponent={Divider}
-          sections={sections.reverse()}
+          sections={sections}
           keyExtractor={(item) => item._id}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={refreshPage}
+            />
+          }
           renderSectionHeader={({ section }) => (
             <List.Subheader
               style={{
