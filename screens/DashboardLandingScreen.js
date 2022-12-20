@@ -15,11 +15,13 @@ import useUser from '../hooks/useUser';
 const renderScene = ({ route, jumpTo }) => {
   switch (route.key) {
     case 'home':
-      return <HomeScene jumpTo={jumpTo} />;
+      return <HomeScene jumpTo={jumpTo} sceneKey={route.key} />;
     case 'profile':
-      return <ProfileScene jumpTo={jumpTo} />;
+      return <ProfileScene jumpTo={jumpTo} sceneKey={route.key} />;
     case 'logs':
-      return <PaymentLogsScene jumpTo={jumpTo} />;
+      return (
+        <PaymentLogsScene jumpTo={jumpTo} sceneKey={route.key} />
+      );
   }
 };
 

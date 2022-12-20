@@ -81,8 +81,7 @@ export const paymentSlice = createSlice({
   initialState,
   reducers: {
     resetPaymentRecordStatus: (state) => {
-      state.recordTransaction.status =
-        initialState.recordTransaction.status;
+      state.recordTransaction = initialState.recordTransaction;
     },
     resetPaymentStatus: (state) => {
       state.status = initialState.status;
@@ -123,8 +122,13 @@ export const paymentSlice = createSlice({
     builder.addCase(
       recordPaymentTransaction.fulfilled,
       (state, action) => {
-        state.recordTransaction.data = action.payload;
-        state.recordTransaction.status = paymentStates.FETCHED;
+        if (action.payload.status === 'success') {
+          state.recordTransaction.data = action.payload.data;
+          state.recordTransaction.status = paymentStates.FETCHED;
+        } else {
+          state.recordTransaction.status = paymentStates.ERROR;
+          state.recordTransaction.error = action.payload.message;
+        }
       }
     );
     builder.addCase(recordPaymentTransaction.rejected, (state) => {

@@ -2,20 +2,20 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { Appbar, IconButton, Menu, Text } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { theme } from '../../constants';
 import useUser from '../../hooks/useUser';
-import { logoutAction } from '../../slices/globalSlice';
+import { logoutAction, selectGlobal } from '../../slices/globalSlice';
 import { Column, Row } from '../../utilities/components/common';
 
 const CustomNavigationBar = (props) => {
   const title = props.options.headerTitle || '';
   const index = props.options.tabIndex || 0;
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { backgroundColor } = props.options.headerStyle;
 
   const navigator = useNavigation();
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = useState(false);
 
   const openMenu = () => setVisible(true);
 
@@ -23,7 +23,7 @@ const CustomNavigationBar = (props) => {
 
   const { user, role, full_name, isStudent } = useUser();
 
-  const handleLogout = async ()=> {
+  const handleLogout = async () => {
     dispatch(logoutAction());
     navigator.navigate('GetStarted');
   };
@@ -64,9 +64,7 @@ const CustomNavigationBar = (props) => {
                     </Text>
                     )
                   </Text>
-                  <Text style={styles.role}>
-                    {role.n}
-                  </Text>
+                  <Text style={styles.role}>{role.n}</Text>
                 </Column>
               </Row>
               {/* <View style={{ flex: 1 }}>
@@ -87,10 +85,22 @@ const CustomNavigationBar = (props) => {
                   style={{ marginTop: 40 }}
                   visible={visible}
                   onDismiss={closeMenu}
-                  anchor={<IconButton onPress={openMenu} style={{ margin: 0 }} size={25} icon="dots-vertical" />}
+                  anchor={
+                    <IconButton
+                      onPress={openMenu}
+                      style={{ margin: 0 }}
+                      size={25}
+                      icon="dots-vertical"
+                    />
+                  }
                 >
                   <Menu.Item
-                    icon={() => <IconButton style={{ margin: 0 }} icon="logout" />}
+                    icon={() => (
+                      <IconButton
+                        style={{ margin: 0 }}
+                        icon="logout"
+                      />
+                    )}
                     onPress={() => handleLogout()}
                     title="Logout"
                   />
@@ -100,7 +110,8 @@ const CustomNavigationBar = (props) => {
           </View>
         </>
       );
-    } else { // Lecturer
+    } else {
+      // Lecturer
       return (
         <>
           <View
@@ -127,12 +138,8 @@ const CustomNavigationBar = (props) => {
                   // }}
                 />
                 <Column>
-                  <Text style={styles.boldText}>
-                    {full_name}
-                  </Text>
-                  <Text style={styles.role}>
-                    {role.n}
-                  </Text>
+                  <Text style={styles.boldText}>{full_name}</Text>
+                  <Text style={styles.role}>{role.n}</Text>
                 </Column>
               </Row>
               <View style={{ flex: 1, alignItems: 'flex-end' }}>
@@ -140,10 +147,22 @@ const CustomNavigationBar = (props) => {
                   style={{ marginTop: 40 }}
                   visible={visible}
                   onDismiss={closeMenu}
-                  anchor={<IconButton onPress={openMenu} style={{ margin: 0 }} size={25} icon="dots-vertical" />}
+                  anchor={
+                    <IconButton
+                      onPress={openMenu}
+                      style={{ margin: 0 }}
+                      size={25}
+                      icon="dots-vertical"
+                    />
+                  }
                 >
                   <Menu.Item
-                    icon={() => <IconButton style={{ margin: 0 }} icon="logout" />}
+                    icon={() => (
+                      <IconButton
+                        style={{ margin: 0 }}
+                        icon="logout"
+                      />
+                    )}
                     onPress={() => handleLogout()}
                     title="Logout"
                   />
@@ -152,7 +171,9 @@ const CustomNavigationBar = (props) => {
             </View>
             <View style={{ marginTop: 30 }}>
               <Text style={styles.boldText}>Easy & Realiable</Text>
-              <Text style={styles.boldText}>Online Payment Portal</Text>
+              <Text style={styles.boldText}>
+                Online Payment Portal
+              </Text>
             </View>
           </View>
         </>

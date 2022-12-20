@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { PayWithFlutterwave } from 'flutterwave-react-native';
 import { theme } from '../constants';
@@ -25,7 +25,7 @@ const PayDuesScreen = ({ route, navigation }) => {
   const { user, token } = useUser();
 
   const { data } = useSelector(selectPayment);
-  const { status: recordStatus } = useSelector(
+  const { status: recordStatus, error: recordError } = useSelector(
     selectRecordTransaction
   );
 
@@ -67,14 +67,20 @@ const PayDuesScreen = ({ route, navigation }) => {
       navigation.navigate('PaySuccess', {
         cardName: 'Charis Bank',
         paymentFor: paymentDetails.title,
-        paymentMethod: 'card',
+        paymentMethod: 'CARD Transaction',
         amount: paymentDetails.multiple_levels
           ? paymentDetails.level_dues[user.currentLevel]
           : paymentDetails.price,
         date: new Date(),
       });
+    } else if (recordStatus === paymentStates.ERROR) {
+      dispatch(toggleFullIsLoading());
+      Alert.alert(
+        'Payment Error',
+        // 'Payment was unsuccessful.'
+        recordError
+      );
     }
-
     return () => {
       dispatch(resetPaymentRecordStatus());
     };
@@ -127,9 +133,11 @@ const PayDuesScreen = ({ route, navigation }) => {
           customer: {
             email: user.email,
           },
-          amount: paymentDetails.multiple_levels
-            ? paymentDetails.level_dues[user.currentLevel]
-            : paymentDetails.price,
+          amount: parseInt(
+            paymentDetails.multiple_levels
+              ? paymentDetails.level_dues[user.currentLevel]
+              : paymentDetails.price
+          ),
           currency: 'NGN',
           payment_options: 'card',
         }}

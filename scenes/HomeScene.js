@@ -70,7 +70,7 @@ const GlanceRight = (props) => {
   );
 };
 
-const HomeScene = ({ jumpTo }) => {
+const HomeScene = ({ jumpTo, sceneKey }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { user, full_name, token, role, isStudent } = useUser();
@@ -173,7 +173,9 @@ const HomeScene = ({ jumpTo }) => {
 
   useEffect(() => {
     if (status === paymentStates.FETCHED) {
-      // setPaymentListLoading(false);
+      if (sceneKey === 'home') {
+        setPaymentListLoading(false);
+      }
       setRefreshing(false);
       dispatch(resetPaymentStatus());
     }

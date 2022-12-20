@@ -5,11 +5,12 @@ import { selectGlobal } from '../slices/globalSlice';
 import getRole from '../utilities/getRole';
 
 const useUser = () => {
-  const { loggedInUser: user } = useSelector(selectGlobal);
+  const { loggedInUser: user, isLoggedIn } = useSelector(selectGlobal);
 
   return {
     user,
     role: getRole(user?.roles),
+    isLoggedIn,
     isStudent: user
       ? getRole(user?.roles).c < ROLESNUMBERS['Lecturer']
       : null,
