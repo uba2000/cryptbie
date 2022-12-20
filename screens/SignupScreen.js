@@ -82,14 +82,19 @@ const SignupScreen = () => {
         enableOnAndroid={true}
       >
         <Container>
-          <Row style={{ marginVertical: 24 }}>
-            <Image
-              source={require('../assets/images/logo-name.png')}
-            />
+          <Row>
+            <Text style={styles.title}>Create Account</Text>
           </Row>
 
           <Row>
-            <Text style={styles.subTitle}>Create Account</Text>
+            <Text style={[styles.subTitle, { marginBottom: 4 }]}>
+              Register with your details below to start
+            </Text>
+          </Row>
+          <Row>
+            <Text style={styles.subTitle}>
+              paying your dues easily
+            </Text>
           </Row>
 
           <Row style={{ alignSelf: 'flex-start' }}>
@@ -239,11 +244,19 @@ const SignupScreen = () => {
 export default SignupScreen;
 
 const styles = StyleSheet.create({
-  subTitle: {
-    fontSize: theme.fontSize.subTitle,
+  title: {
+    fontSize: theme.fontSize.title,
     color: theme.color.neutral700,
-    marginBottom: theme.spacing.large,
+    marginBottom: theme.spacing.small,
+    marginTop: 24,
     fontFamily: 'archivo-regular700',
+    alignSelf: 'center',
+  },
+  subTitle: {
+    fontSize: 16,
+    color: theme.color.neutral700,
+    marginBottom: 24,
+    fontFamily: 'archivo-regular',
     alignSelf: 'center',
   },
   label: {

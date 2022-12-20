@@ -34,6 +34,7 @@ import {
   selectPayment,
 } from '../slices/paymentSlice';
 import {
+  selectFullLoading,
   selectGlobal,
   toggleFullIsLoading,
 } from '../slices/globalSlice';
@@ -75,6 +76,7 @@ const HomeScene = ({ jumpTo, sceneKey }) => {
   const dispatch = useDispatch();
   const { user, full_name, token, role, isStudent } = useUser();
   const { isLoggedIn, loggedInUser } = useSelector(selectGlobal);
+  const fullLoading = useSelector(selectFullLoading);
   const { status, data } = useSelector(selectPayment);
   const [paymentListLoading, setPaymentListLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -164,10 +166,14 @@ const HomeScene = ({ jumpTo, sceneKey }) => {
   const { status: logsStatus, logs } = useSelector(selectLogs);
 
   useEffect(() => {
-    if (logsStatus === logStates.FETCHED) {
-      dispatch(resetLogsStatus());
-      dispatch(toggleFullIsLoading());
-      jumpTo('logs');
+    if (sceneKey === 'home') {
+      if (logsStatus === logStates.FETCHED) {
+        dispatch(resetLogsStatus());
+        if (fullLoading) {
+          dispatch(toggleFullIsLoading());
+        }
+        jumpTo('logs');
+      }
     }
   }, [logsStatus]);
 
@@ -208,7 +214,7 @@ const HomeScene = ({ jumpTo, sceneKey }) => {
                     fontFamily: 'archivo-regular600',
                   }}
                 >
-                  2018 / 2019
+                  2021 / 2022
                 </CommonText>
                 <CommonText
                   style={{

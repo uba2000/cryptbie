@@ -67,8 +67,9 @@ export const globalSlice = createSlice({
 
 export const selectShareReceipt = (state) =>
   state.global.shareReceipt;
-
 export const selectGlobal = (state) => state.global;
+export const selectFullLoading = (state) =>
+  state.global.fullIsLoading;
 
 export const {
   setLoggedIn,

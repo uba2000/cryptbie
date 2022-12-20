@@ -33,9 +33,12 @@ import {
   resetLogsStatus,
   logStates,
 } from '../slices/logsSlice';
-import { toggleFullIsLoading } from '../slices/globalSlice';
+import {
+  selectFullLoading,
+  toggleFullIsLoading,
+} from '../slices/globalSlice';
 
-const PaymentLogsScene = () => {
+const PaymentLogsScene = ({ sceneKey }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -43,6 +46,7 @@ const PaymentLogsScene = () => {
     (state) => state.logs
   );
   const { data: allPaymentTypes } = useSelector(selectPayment);
+  const fullLoading = useSelector(selectFullLoading);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -68,9 +72,10 @@ const PaymentLogsScene = () => {
     if (searchQuery) {
       searchQuery = searchQuery.toLowerCase();
       allLogs = allLogs?.filter((log) => {
+        console.log({ looooogggggG: log });
         return (
           log.name?.toLowerCase().includes(searchQuery) ||
-          // log.Patient?.toLowerCase().includes(searchQuery) ||
+          log.matNo?.toLowerCase().includes(searchQuery) ||
           log.txn_id?.toString().toLowerCase().includes(searchQuery)
         );
       });
@@ -113,11 +118,15 @@ const PaymentLogsScene = () => {
   }
 
   useEffect(() => {
-    if (status === logStates.FETCHED) {
-      setRefreshing(false);
-      groupOrders(searchQuery);
-      dispatch(toggleFullIsLoading());
-      // dispatch(resetLogsStatus());
+    if (sceneKey === 'logs') {
+      if (status === logStates.FETCHED) {
+        setRefreshing(false);
+        groupOrders(searchQuery);
+        if (fullLoading) {
+          dispatch(toggleFullIsLoading());
+        }
+        // dispatch(resetLogsStatus());
+      }
     }
   }, [status]);
 
@@ -133,7 +142,7 @@ const PaymentLogsScene = () => {
         <Searchbar
           style={{ flex: 1, maxHeight: 40 }}
           inputStyle={{ fontSize: 16, lineHeight: 21 }}
-          placeholder="Search by name or keyword"
+          placeholder="Search by name or mat number"
           value={searchQuery}
           onChangeText={(query) => searchOrder(query)}
         />
